@@ -9,16 +9,16 @@ export class AuthService {
 
   async signup(dto: SignupDto) {
     // 회원가입 로직을 처리하는 메서드
-    const existing = await this.usersService.findByEmail(dto.email) // 이메일로 기존 사용자 조회
-    if (existing) throw new ConflictException('이미 존재하는 이메일입니다') // 이미 존재하는 이메일이면 예외 발생
+    const existing = await this.usersService.findByEmail(dto.email) // 이메일로 기존 사용자 조회 (usersService의 findByEmail 메서드 호출)
+    if (existing) throw new ConflictException('이미 존재하는 이메일입니다') // 이미 존재하는 이메일이면 ConflictException 예외 발생
 
-    const hashedPassword = await bcrypt.hash(dto.password, 10) // 비밀번호를 bcrypt를 사용해 해싱
+    const hashedPassword = await bcrypt.hash(dto.password, 10) // 비밀번호를 bcrypt 라이브러리를 사용해 해싱 (비밀번호 암호화)
     const user = await this.usersService.create({
-      // 새로운 사용자 생성
-      ...dto, // DTO의 나머지 필드 복사
+      // 새로운 사용자 생성 (usersService의 create 메서드 호출)
+      ...dto, // DTO의 나머지 필드 복사 (email, name 등)
       password: hashedPassword, // 해싱된 비밀번호로 대체
     })
 
-    return { message: '회원가입 성공', user } // 성공 메시지와 생성된 사용자 반환
+    return { message: '회원가입 성공', user } // 성공 메시지와 생성된 사용자 객체 반환
   }
 }
