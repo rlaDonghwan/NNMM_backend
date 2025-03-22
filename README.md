@@ -1,99 +1,66 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📁 Backend 디렉토리 구조 설명
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS 기반의 서버 구조이며, 기능 단위(`auth`, `users`, `database`)로 모듈화되어 있다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📁 src
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 📁 auth
 
-## Project setup
+인증 및 회원가입 관련 기능을 처리합니다.
 
-```bash
-$ npm install
-```
+| 파일명               | 역할                                                |
+| -------------------- | --------------------------------------------------- |
+| `auth.controller.ts` | `/auth/signup`, `/auth/login` 등 요청 처리 컨트롤러 |
+| `auth.service.ts`    | 인증 로직 처리 (비밀번호 해싱, 유저 생성 등)        |
+| `auth.dto.ts`        | 회원가입 및 로그인에 사용되는 데이터 전송 객체 정의 |
+| `auth.module.ts`     | `AuthService`, `AuthController`를 모듈로 구성       |
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+### 📁 users
 
-# watch mode
-$ npm run start:dev
+유저 정보 관리 기능 (DB 연결 포함)
 
-# production mode
-$ npm run start:prod
-```
+| 파일명             | 역할                                    |
+| ------------------ | --------------------------------------- |
+| `user.schema.ts`   | MongoDB 사용자 스키마 정의 (`Mongoose`) |
+| `users.service.ts` | 유저 조회, 생성 등의 DB 로직 처리       |
+| `users.module.ts`  | `UserService`, `UserSchema`를 모듈화    |
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+### 📁 database
 
-# e2e tests
-$ npm run test:e2e
+| 파일명               | 역할                                        |
+| -------------------- | ------------------------------------------- |
+| `database.module.ts` | Mongoose 및 환경변수 기반 DB 연결 설정 모듈 |
 
-# test coverage
-$ npm run test:cov
-```
+---
 
-## Deployment
+### 📄 app.module.ts
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+루트 모듈로, `auth`, `users`, `database` 모듈을 통합 등록하는 역할
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 📄 app.controller.ts
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+기본 라우팅이나 테스트용 엔드포인트 정의 (ex. `/`)
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 📄 app.service.ts
 
-## Resources
+기본 서비스 (현재는 필요 시 로직 확장 가능)
 
-Check out a few resources that may come in handy when working with NestJS:
+### 📄 main.ts
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Nest 애플리케이션의 진입점. 서버 실행 및 CORS 설정 포함
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## ✅ 참고
 
-## Stay in touch
+- MongoDB 연결은 `.env`의 `MONGO_URI`와 `CORS_ORIGIN`, `PORT`로 설정
+- 모든 요청/응답은 `DTO`를 통해 유효성 검사 및 타입 안정성을 확보
+- 비밀번호 암호화는 `bcrypt`로 처리
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# NNMM_Backend
+---
