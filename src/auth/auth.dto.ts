@@ -1,5 +1,4 @@
 export class SignupDto {
-  _id: string
   email: string
   name: string
   position: string

@@ -6,6 +6,8 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   getProfile(@Req() req) {
+    console.log('🛑 users/me 접근 시도') // 여기까지 도달하면 validate 성공
+    console.log('req.user:', req.user)
     return req.user
   }
 }
