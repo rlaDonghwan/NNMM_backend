@@ -1,26 +1,27 @@
-// src/auth/strategy/jwt.strategy.ts
 import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
+import { ConfigService } from '@nestjs/config'
+import { UsersService } from '@/users/users.service'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
-    console.log('🔥 JwtStrategy Constructor 호출됨') // ← 반드시 찍혀야 함
-    const jwtSecret = process.env.JWT_SECRET || 'default-secret'
-
-    // ✅ 로그 찍기
-    console.log('🔐 JWT_SECRET loaded:', jwtSecret)
-
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: jwtSecret,
+      ignoreExpiration: false,
+      secretOrKey: configService.get<string>('JWT_SECRET') || 'default-secret',
     })
-    console.log('🧪 JwtStrategy super() 완료됨')
   }
 
   async validate(payload: any) {
-    console.log('🔥 validate() called! payload:', payload) // << 꼭 찍혀야 함
-    return { userId: payload.sub, email: payload.email }
+    const user = await this.usersService.findById(payload.sub)
+    if (!user) {
+      throw new Error('Invalid token payload')
+    }
+    return user // req.user로 전달됨
   }
 }

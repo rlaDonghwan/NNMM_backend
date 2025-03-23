@@ -31,24 +31,40 @@ export class AuthService {
   }
   //----------------------------------------------------------------------------------------------------
 
-  // 로그인 로직을 처리하는 메서드
+  // 로그인 메서드 (JWT 토큰 생성 및 반환)
   async login(dto: LoginDto) {
-    const user = (await this.usersService.findByEmail(dto.email)) as UserDocument
+    const user = await this.validateUser(dto.email, dto.password)
 
-    if (!user) throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다') // 사용자가 없으면 UnauthorizedException 예외 발생
-
-    const isMatch = await bcrypt.compare(dto.password, user.password) // 입력된 비밀번호와 사용자의 비밀번호 해시 비교
-    if (!isMatch) throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다') // 비밀번호가 일치하지 않으면 UnauthorizedException 예외 발생
-
-    // const payload = { sub: user._id, email: user.email } // JWT 토큰에 담을 페이로드 데이터 정의
     const payload = {
       sub: (user._id as Types.ObjectId).toString(),
       email: user.email,
     }
 
-    const token = this.jwtService.sign(payload) // JWT 토큰 생성 (JwtService의 sign 메서드 호출)
+    const token = this.jwtService.sign(payload)
 
-    return { message: '로그인 성공', token, user: { email: user.email, name: user.name } } // 성공 메시지와 토큰 반환
+    return {
+      message: '로그인 성공',
+      token,
+      user: { email: user.email, name: user.name },
+    }
+  }
+  //----------------------------------------------------------------------------------------------------
+
+  // 사용자 인증 메서드 (이메일과 비밀번호 검증)
+  private async validateUser(email: string, password: string): Promise<UserDocument> {
+    const user = (await this.usersService.findByEmail(email)) as UserDocument
+
+    if (!user) {
+      throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다')
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+
+    if (!isMatch) {
+      throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다')
+    }
+
+    return user
   }
   //----------------------------------------------------------------------------------------------------
 }
