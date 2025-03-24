@@ -9,19 +9,21 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 
 @Module({
   imports: [
-    UsersModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    UsersModule, // UsersModule을 가져와 사용자 관련 기능을 사용
+    PassportModule.register({ defaultStrategy: 'jwt' }), // PassportModule을 'jwt' 기본 전략으로 등록
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
+      // JwtModule을 비동기로 설정
+      imports: [ConfigModule], // 환경 변수를 접근하기 위해 ConfigModule 가져오기
+      inject: [ConfigService], // ConfigService를 주입하여 설정 값 가져오기
       useFactory: (config: ConfigService) => ({
-        secret: config.get('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        // JwtModule을 설정하는 팩토리 함수
+        secret: config.get('JWT_SECRET'), // 환경 변수에서 JWT 비밀 키 설정
+        signOptions: { expiresIn: '1d' }, // 토큰 만료 시간을 1일로 설정
       }),
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [JwtModule, AuthService],
+  controllers: [AuthController], // 이 모듈의 컨트롤러로 AuthController 정의
+  providers: [AuthService, JwtStrategy], // AuthService와 JwtStrategy를 의존성 주입을 위해 제공
+  exports: [JwtModule, AuthService], // 다른 모듈에서 사용하기 위해 JwtModule과 AuthService를 내보냄
 })
-export class AuthModule {}
+export class AuthModule {} // AuthModule 클래스를 정의하고 내보냄
