@@ -13,6 +13,13 @@ export class UsersService {
   }
   //----------------------------------------------------------------------------------------------------
 
+  async findByName(name: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({
+        name,
+      })
+      .exec()
+  }
   // ID로 사용자를 검색 (JwtStrategy에서 필요)
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(new Types.ObjectId(id)).exec()
