@@ -1,7 +1,7 @@
 // src/users/users.module.ts
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { User, UserSchema } from './user.schema'
+import { User, UserSchema } from './schemas/user.schema.ts'
 import { UsersService } from './users.service'
 import { UsersController } from './users.controller'
 

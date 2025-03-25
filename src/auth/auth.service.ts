@@ -5,7 +5,7 @@ import { LoginDto } from './auth.dto' // 회원가입 요청 데이터를 정의
 import * as bcrypt from 'bcrypt' // 비밀번호 암호화를 위한 bcrypt 라이브러리를 가져옴
 import { JwtService } from '@nestjs/jwt' // JWT 토큰 생성을 위한 JwtService를 가져옴
 import e from 'express'
-import { UserDocument } from '../users/user.schema'
+import { UserDocument } from '../users/schemas/user.schema.ts'
 import { Types } from 'mongoose'
 
 @Injectable() // 이 클래스가 NestJS의 의존성 주입 시스템에서 사용될 수 있도록 Injectable 데코레이터를 추가
