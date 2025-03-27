@@ -9,11 +9,12 @@ export class IndicatorController {
 
   @Get()
   getAll(): Promise<Indicator[]> {
-    return this.indicatorService.findAll()
+    return this.indicatorService.findAll() // findAll 메소드를 실행
   }
 
   @Post()
   create(@Body() body: Partial<Indicator>): Promise<Indicator> {
+    // create 메소드를 실행
     return this.indicatorService.create(body)
   }
 }

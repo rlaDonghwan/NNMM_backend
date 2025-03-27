@@ -25,6 +25,9 @@ export class Chart {
 
   @Prop([String])
   labels?: string[] // ex: ['Scope 1', 'Scope 2']
+
+  @Prop()
+  order?: number // ex: 1, 2, 3
 }
 
 export const ChartSchema = SchemaFactory.createForClass(Chart)

@@ -12,6 +12,7 @@ export class ChartService {
     private readonly chartModel: Model<Chart>,
   ) {}
 
+  // CreateChartDto 타입을 인자로 받아 Promise<Chart> 타입을 반환하는 메서드
   async createChart(createChartDto: CreateChartDto): Promise<Chart> {
     const created = new this.chartModel({
       ...createChartDto,
@@ -19,4 +20,5 @@ export class ChartService {
     })
     return created.save()
   }
+  //----------------------------------------------------------------------------------------------------
 }

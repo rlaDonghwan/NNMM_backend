@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common'
-import { EsgController } from './esg.controller'
-import { EsgService } from './esg.service'
+import { ESGController } from './esg.controller'
+import { ESGService } from './esg.service'
 import { MongooseModule } from '@nestjs/mongoose'
 import { ESG, ESGSchema } from './schemas/esg.schema'
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: ESG.name, schema: ESGSchema }])],
-  controllers: [EsgController],
-  providers: [EsgService],
+  controllers: [ESGController],
+  providers: [ESGService],
 })
 export class ESGModule {}

@@ -10,19 +10,13 @@ export class Indicator {
   category: 'environmental' | 'social' | 'governance'
 
   @Prop({ required: true })
-  group: string // ex: 직접에너지 사용량
-
-  @Prop({ required: true, unique: true })
-  key: string // ex: directEnergy.jetFuel
+  group: string // 중분류
 
   @Prop({ required: true })
-  label: string // ex: 항공유
-
-  @Prop()
-  unit: string // ex: TJ, tCO₂-eq
+  label: string // 중분류
 
   @Prop({ default: true })
-  isActive: boolean
+  isActive: boolean // 사용 여부
 }
 
 export const IndicatorSchema = SchemaFactory.createForClass(Indicator)
