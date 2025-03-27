@@ -17,14 +17,14 @@ export class Chart {
   @Prop({ required: true })
   chartType: string // e.g. 'bar', 'pie', 'line'
 
-  @Prop({ required: true })
-  targetDataKey: string // e.g. 'environmental.energyUse'
+  @Prop({ type: [String], required: true })
+  targetDataKeys: string[] // e.g. ['scope1', 'scope2', 'scope3']
 
   @Prop([String])
   colorSet?: string[]
 
   @Prop([String])
-  labels?: string[]
+  labels?: string[] // ex: ['Scope 1', 'Scope 2']
 }
 
 export const ChartSchema = SchemaFactory.createForClass(Chart)
