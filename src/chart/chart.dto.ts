@@ -24,4 +24,8 @@ export class CreateChartDto {
   @IsOptional()
   @IsArray()
   labels: string[]
+
+  @IsOptional()
+  @IsArray()
+  years: number[]
 }

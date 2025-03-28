@@ -15,6 +15,9 @@ export class Indicator {
   @Prop({ required: true })
   label: string // 중분류
 
+  @Prop({ required: true })
+  unit: string //  단위
+
   @Prop({ default: true })
   isActive: boolean // 사용 여부
 }

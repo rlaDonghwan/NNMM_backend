@@ -1,26 +1,24 @@
 // src/esg/dto/create-esg.dto.ts
-import { IsNotEmpty, IsString, IsNumber, IsObject } from 'class-validator'
+import { IsNotEmpty, IsString, IsArray, IsObject } from 'class-validator'
 
-export class CreateEsgDto {
+export class CreateESGDto {
   @IsNotEmpty()
   @IsString()
   userId: string
 
   @IsNotEmpty()
   @IsString()
-  companyName: string
+  category: 'environmental' | 'social' | 'governance'
 
   @IsNotEmpty()
-  @IsNumber()
-  year: number
+  @IsArray()
+  years: number[]
 
   @IsNotEmpty()
-  @IsObject()
-  environmental: any
-
-  @IsObject()
-  social: any
-
-  @IsObject()
-  governance: any
+  @IsArray()
+  rows: {
+    indicatorKey: string
+    values: Record<number, string>
+    color?: string
+  }[]
 }
