@@ -21,4 +21,17 @@ export class ChartService {
     return created.save()
   }
   //----------------------------------------------------------------------------------------------------
+
+  async createDefaultConfig(userId: string, category: string, indicatorKey: string) {
+    return this.chartModel.create({
+      userId,
+      category,
+      indicatorKey,
+      chartType: 'bar',
+      title: `${indicatorKey}`,
+      colors: ['#88CCE6'],
+      xField: 'year',
+      yField: 'value',
+    })
+  }
 }
