@@ -14,7 +14,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (req: Request) => req?.cookies?.accessToken, // ✅ 쿠키에서 accessToken 추출
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        (req: Request) => {
+          console.log('👉 쿠키 accessToken:', req?.cookies?.accessToken)
+          return req?.cookies?.accessToken
+        },
       ]),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('JWT_SECRET') || 'default-secret',
@@ -22,7 +26,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    console.log('👉 JWT payload:', payload)
     const user = await this.usersService.findById(payload.sub)
+    console.log('👉 JWT user:', user)
     if (!user) {
       throw new Error('Invalid token payload')
     }

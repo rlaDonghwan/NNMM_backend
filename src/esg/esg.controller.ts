@@ -1,4 +1,3 @@
-// src/esg/esg.controller.ts
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common'
 import { ESGService } from './esg.service'
 import { CreateESGDto } from '@/esg/esg.dto'
@@ -9,16 +8,13 @@ import { AuthGuard } from '@nestjs/passport'
 export class ESGController {
   constructor(private readonly esgService: ESGService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   async create(@Body() dto: Omit<CreateESGDto, 'userId'>, @Req() req: Request) {
-    const user = req.user as any // ✅ JwtStrategy에서 리턴한 사용자 정보
-    console.log('✅ Received ESG data:', dto)
-    console.log('👤 인증된 사용자:', user)
-
+    const user = req.user as any
     return this.esgService.createWithIndicatorCheck({
       ...dto,
-      userId: user._id.toString(), // ✅ userId 자동 주입
+      userId: user._id.toString(),
     })
   }
 }

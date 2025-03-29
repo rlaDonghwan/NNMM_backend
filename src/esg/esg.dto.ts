@@ -1,10 +1,10 @@
 // src/esg/dto/create-esg.dto.ts
-import { IsNotEmpty, IsString, IsArray, IsObject } from 'class-validator'
+import { IsNotEmpty, IsString, IsArray } from 'class-validator'
 
 export class CreateESGDto {
   @IsNotEmpty()
   @IsString()
-  userId: string
+  userId: string // ✅ 이거 다시 추가!
 
   @IsNotEmpty()
   @IsString()
