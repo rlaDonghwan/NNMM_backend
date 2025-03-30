@@ -1,31 +1,42 @@
 import { IsArray, IsOptional, IsString, IsNumber } from 'class-validator'
 
 export class CreateChartDto {
-  @IsString()
-  userId: string
   @IsOptional()
   @IsString()
-  companyName: string
+  companyName?: string
 
   @IsOptional()
   @IsNumber()
-  year: number
+  year?: number
 
   @IsString()
-  chartType: string
+  chartType: string // 기본: 'bar'
 
   @IsArray()
   targetDataKeys: string[]
 
   @IsOptional()
   @IsArray()
-  colorSet: string[]
+  colorSet?: string[] // 기본: ['#3BAFDA']
 
   @IsOptional()
   @IsArray()
-  labels: string[]
+  labels?: string[] // targetDataKeys와 동일하게 fallback
 
   @IsOptional()
   @IsArray()
-  years: number[]
+  years?: number[]
+
+  @IsOptional()
+  @IsNumber()
+  order?: number
+}
+
+export class RecommendChartDto {
+  @IsArray()
+  targetDataKeys: string[]
+
+  @IsOptional()
+  @IsArray()
+  years?: number[]
 }

@@ -6,25 +6,25 @@ export type ChartDocument = Chart & Document
 @Schema({ timestamps: true })
 export class Chart {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId
+  userId: Types.ObjectId // User ID
 
   @Prop()
-  companyName?: string
+  companyName?: string // 회사 명
 
   @Prop()
-  year?: number
+  year?: number // 연도
 
   @Prop({ required: true })
-  chartType: string // e.g. 'bar', 'pie', 'line'
+  chartType: string //차트 종류 'bar', 'pie', 'line'
 
   @Prop({ type: [String], required: true })
-  targetDataKeys: string[] // e.g. ['scope1', 'scope2', 'scope3']
+  targetDataKeys: string[] // 지표 ['scope1', 'scope2', 'scope3']
 
   @Prop([String])
-  colorSet?: string[]
+  colorSet?: string[] // 색상 값
 
   @Prop([String])
-  labels?: string[] // ex: ['Scope 1', 'Scope 2']
+  labels?: string[] // 라벨 ['Scope 1', 'Scope 2']
 
   @Prop()
   order?: number // ex: 1, 2, 3
