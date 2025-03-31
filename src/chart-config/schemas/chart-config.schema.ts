@@ -8,6 +8,9 @@ export class Chart {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId // User ID
 
+  @Prop({ type: Types.ObjectId, ref: 'ESGReport', required: true })
+  reportId: Types.ObjectId
+
   @Prop()
   companyName?: string // 회사 명
 
