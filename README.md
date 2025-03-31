@@ -1,102 +1,123 @@
-# 📁 Backend 디렉토리 구조 설명 (NestJS + Mongoose 기반)
+# ✅ 프로젝트 구조 설명 (`src` 기준)
 
-• nest generate module [모듈명]
-• nest g co users → 컨트롤러 생성
-• nest g s users → 서비스 생성
-
-**기능 단위(Module 단위)로 나눠진 NestJS 구조**
-
-- 인증, 사용자 관리, DB 연결 기능이 명확히 분리
-- MongoDB + JWT 인증 기반 API 서버 설계
-
----
-
-## 📁 `src` (핵심 애플리케이션 폴더)
-
----
-
-### 📁 `auth` - 인증 기능
-
-인증(JWT), 로그인, 회원가입 로직을 담당
-
-| 파일명                        | 설명                                                             |
-| ----------------------------- | ---------------------------------------------------------------- |
-| `auth.controller.ts`          | `/auth/signup`, `/auth/login` 등 요청을 처리하는 라우팅 컨트롤러 |
-| `auth.service.ts`             | 인증 로직 처리 (비밀번호 검증, 토큰 발급 등)                     |
-| `auth.dto.ts`                 | 로그인, 회원가입 요청의 DTO 정의 (`LoginDto`, `SignupDto`)       |
-| `auth.module.ts`              | 인증 관련 구성 요소를 Nest 모듈로 등록                           |
-| 📁 `strategy/jwt.strategy.ts` | JWT 토큰 검증 및 payload 처리 전략 (`PassportStrategy` 기반)     |
-
----
-
-### 📁 `users` - 사용자 관리 기능
-
-유저 데이터베이스 모델과 유저 관련 CRUD 로직을 포함
-
-| 파일명                | 설명                                                      |
-| --------------------- | --------------------------------------------------------- |
-| `user.schema.ts`      | Mongoose 기반 사용자 스키마 정의 (`User`, `UserDocument`) |
-| `users.controller.ts` | `/users/me` 등의 사용자 정보 요청 처리 컨트롤러           |
-| `users.service.ts`    | 유저 생성, 조회 등 DB 관련 비즈니스 로직                  |
-| `users.module.ts`     | 유저 관련 구성 요소를 Nest 모듈로 등록                    |
-
----
-
-### 📁 `database` - DB 연결 설정
-
-| 파일명               | 설명                                         |
-| -------------------- | -------------------------------------------- |
-| `database.module.ts` | Mongoose 연결 설정 (MongoDB URI, DB 이름 등) |
+```
+📦src
+ ┣ 📂auth
+ ┃ ┣ 📂jwt
+ ┃ ┃ ┣ jwt.guard.ts
+ ┃ ┃ ┗ jwt.strategy.ts
+ ┃ ┣ auth.controller.ts
+ ┃ ┣ auth.dto.ts
+ ┃ ┣ auth.module.ts
+ ┃ ┗ auth.service.ts
+ ┣ 📂chart-config
+ ┃ ┣ chart-config.controller.ts
+ ┃ ┣ chart-config.dto.ts
+ ┃ ┣ chart-config.module.ts
+ ┃ ┣ chart-config.schema.ts
+ ┃ ┗ chart-config.service.ts
+ ┣ 📂database
+ ┃ ┗ database.module.ts
+ ┣ 📂esg-report
+ ┃ ┣ esg-report.controller.ts
+ ┃ ┣ esg-report.dto.ts
+ ┃ ┣ esg-report.module.ts
+ ┃ ┣ esg-report.schemas.ts
+ ┃ ┗ esg-report.service.ts
+ ┣ 📂indicator
+ ┃ ┣ indicator.controller.ts
+ ┃ ┣ indicator.module.ts
+ ┃ ┣ indicator.schema.ts
+ ┃ ┗ indicator.service.ts
+ ┣ 📂users
+ ┃ ┣ user.schema.ts
+ ┃ ┣ users.controller.ts
+ ┃ ┣ users.module.ts
+ ┃ ┗ users.service.ts
+ ┣ app.controller.ts
+ ┣ app.module.ts
+ ┣ app.service.ts
+ ┗ main.ts
+```
 
 ---
 
-### 📄 `app.module.ts`
+## 📁 auth
 
-Nest 애플리케이션의 루트 모듈  
-→ `auth`, `users`, `database` 모듈을 통합 등록
+**JWT 기반 인증 전반을 담당**
 
----
-
-### 📄 `app.controller.ts`
-
-기본 라우트 (`/`) 또는 테스트용 라우트 정의
-
----
-
-### 📄 `app.service.ts`
-
-기본 서비스 로직. (현재는 단순하지만 확장 가능)
+- `auth.controller.ts`: 로그인, 회원가입 API 처리
+- `auth.service.ts`: 비밀번호 확인, 토큰 발급 등 핵심 로직
+- `auth.dto.ts`: 로그인/회원가입 요청 스펙
+- `jwt.guard.ts`: 인증된 요청만 통과시키는 Guard
+- `jwt.strategy.ts`: JWT 토큰 검증 및 사용자 파싱
 
 ---
 
-### 📄 `main.ts`
+## 📁 chart-config
 
-Nest 서버의 진입점
+**차트 구성 정보 저장/불러오기 담당 모듈**
 
-- 애플리케이션 부트스트랩
-- CORS 허용 설정 포함
-- `.env` 기반 환경 변수 로딩
+- `chart-config.controller.ts`: `/chart` GET, POST
+- `chart-config.service.ts`: DB 로직 (Mongoose)
+- `chart-config.schema.ts`: `Chart` 모델 정의
+- `chart-config.dto.ts`: 차트 생성 시 필요한 DTO 정의
 
----
-
-## ✅ 루트 설정 파일들
-
-| 파일명              | 설명                                                     |
-| ------------------- | -------------------------------------------------------- |
-| `.env`              | 환경 변수 정의 (`MONGO_URI`, `JWT_SECRET`, `PORT` 등)    |
-| `package.json`      | NestJS 프로젝트의 의존성, 스크립트 관리                  |
-| `nest-cli.json`     | Nest CLI 설정 (entry file, compilerOptions 등)           |
-| `eslint.config.mjs` | ESLint 설정                                              |
-| `tsconfig*.json`    | TypeScript 컴파일러 옵션 설정                            |
-| `.gitignore`        | Git 추적 제외 항목 설정 (`node_modules`, `.env` 등 포함) |
+📝 현재 클라이언트에서 대시보드에 보이는 차트 정보는 이 모듈을 통해 저장/불러오고 있음
 
 ---
 
-## 🔐 인증 흐름 요약
+## 📁 database
 
-1. 클라이언트에서 `/auth/login` 요청
-2. `auth.service.ts`에서 사용자 정보 확인 후 JWT 토큰 발급
-3. 보호된 라우트에서 `jwt.strategy.ts`가 토큰을 검증
-4. 검증된 유저는 `req.user`로 요청에 전달됨
+공통적으로 사용되는 **MongoDB 연결 세팅**만 따로 분리된 모듈
+
+- `database.module.ts`: MongooseModule 초기화 및 DB 연결 관리
+
+---
+
+## 📁 esg-report
+
+> **현재는 사용하지 않지만, 추후 CSV 업로드 기반 리포트를 위한 준비 모듈**
+
+- 구조와 역할은 차트와 유사
+- `esg-report.schemas.ts`: 리포트에 포함될 row 단위 데이터 구조 정의
+- `esg-report.controller.ts`, `esg-report.service.ts`: CRUD 로직 정의
+- ❗️향후 ESG 관련 CSV 파일 → DB 저장 시 확장 포인트
+
+---
+
+## 📁 indicator
+
+**ESG 지표 관리** 모듈입니다.
+
+- `indicator.schema.ts`: `Indicator` 모델 (label, 단위, 분류 등)
+- `indicator.service.ts`: label 기준 저장/조회
+- `indicator.controller.ts`: 클라이언트에서 지표 요청 시 사용
+
+📌 ESG 입력 시 **지표가 존재하지 않으면 생성**하는 로직에서 사용
+
+---
+
+## 📁 users
+
+**사용자 정보 관리 전담**
+
+- `user.schema.ts`: 사용자 정보 (email, role 등) 정의
+- `users.controller.ts`: `/users/me` 같은 유저 관련 API
+- `users.service.ts`: DB 상 사용자 조회/생성 로직
+
+---
+
+## 📄 app.module.ts
+
+- 각 기능 모듈(`auth`, `users`, `chart-config`, `database`, ...)을 등록하는 루트 모듈
+- NestJS에서 실제로 동작하게 하는 핵심 부분
+
+---
+
+## 📄 main.ts
+
+- Nest 애플리케이션의 엔트리포인트
+- CORS 설정 및 앱 실행 코드
 
 ---
