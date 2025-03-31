@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common' // NestJS의 데코레이터와 모듈 가져오기
+import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common' // NestJS의 데코레이터와 모듈 가져오기
 import { IndicatorService } from './indicator.service' // IndicatorService 가져오기
 import { IndicatorDocument } from './schemas/indicator.schema' // IndicatorDocument 타입 가져오기
 
@@ -70,21 +70,28 @@ export class IndicatorController {
 
   //----------------------------------------------------------------------------------------------------
 
-  @Post('check-or-create') // HTTP POST - 존재 여부 확인 후 없으면 생성
-  async checkOrCreate(@Body() body: { label: string; unit: string }) {
-    const { label, unit } = body
-    let indicator = await this.indicatorService.findByLabel(label)
+  @Post(':category/check-or-create')
+  async checkOrCreate(
+    @Param('category') categoryParam: string,
+    @Body() body: { label: string; unit: string; group?: string },
+  ) {
+    const { label, unit, group = '기타' } = body
+
+    const validCategories = ['social', 'environmental', 'governance'] as const
+    const category = validCategories.includes(categoryParam as any)
+      ? (categoryParam as (typeof validCategories)[number])
+      : 'social'
+
+    let indicator = await this.indicatorService.findByLabelAndCategory(label, category)
 
     if (!indicator) {
-      indicator = (await this.indicatorService.create({
+      indicator = await this.indicatorService.create({
         label,
         unit,
-        category: 'social',
+        group,
+        category,
         isActive: true,
-      })) as IndicatorDocument
-    } else if (indicator.unit !== unit) {
-      indicator.unit = unit
-      indicator = await (indicator as IndicatorDocument).save()
+      })
     }
 
     return indicator
