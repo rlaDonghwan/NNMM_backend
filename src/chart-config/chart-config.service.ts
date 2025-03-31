@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Chart } from './schemas/chart.schema'
+import { Chart } from './schemas/chart-config.schema'
 import { Model } from 'mongoose'
 import mongoose from 'mongoose'
-import { CreateChartDto } from './chart.dto'
+import { CreateChartDto } from './chart-config.dto'
 
 @Injectable()
-export class ChartService {
+export class ChartConfigService {
   constructor(
     @InjectModel(Chart.name)
     private readonly chartModel: Model<Chart>,

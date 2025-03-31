@@ -89,6 +89,7 @@ export class ESGService {
           label,
           category,
           group: '기타',
+          unit: '단위 없음',
         })
       }
     }

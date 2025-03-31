@@ -8,7 +8,7 @@ export class Chart {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId // User ID
 
-  @Prop({ type: Types.ObjectId, ref: 'ESGReport', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'ESGReport', required: false })
   reportId: Types.ObjectId
 
   @Prop()
@@ -33,4 +33,4 @@ export class Chart {
   order?: number // ex: 1, 2, 3
 }
 
-export const ChartSchema = SchemaFactory.createForClass(Chart)
+export const ChartConfigSchema = SchemaFactory.createForClass(Chart)

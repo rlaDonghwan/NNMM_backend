@@ -1,11 +1,11 @@
 import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common'
-import { ChartService } from './chart.service'
-import { CreateChartDto, RecommendChartDto } from './chart.dto'
+import { ChartConfigService } from './chart-config.service'
+import { CreateChartDto, RecommendChartDto } from './chart-config.dto'
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard'
 
 @Controller('chart')
-export class ChartController {
-  constructor(private readonly chartService: ChartService) {}
+export class ChartConfigController {
+  constructor(private readonly chartService: ChartConfigService) {}
 
   // 기본 차트 설정 생성 (지표 단위)
   @Post('config')

@@ -6,8 +6,9 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { DatabaseModule } from './database/database.module'
 import { ESGModule } from './esg/esg.module'
-import { ChartModule } from './chart/chart.module'
+import { ChartConfigModule } from '@/chart-config/chart-config.module'
 import { IndicatorModule } from './indicator/indicator.module'
+import { EsgReportModule } from './esg-report/esg-report.module';
 
 @Module({
   imports: [
@@ -18,8 +19,9 @@ import { IndicatorModule } from './indicator/indicator.module'
     UsersModule,
     DatabaseModule,
     ESGModule,
-    ChartModule,
+    ChartConfigModule,
     IndicatorModule,
+    EsgReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
