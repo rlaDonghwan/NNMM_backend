@@ -19,8 +19,10 @@ export class ChartConfigController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getChartsByUser(@Req() req) {
-    // 차트 호출
-    return this.chartConfigService.findChartsByUser(req.user._id)
+    console.log('[GET /chart] userId:', req.user?._id)
+    const charts = await this.chartConfigService.findChartsByUser(req.user._id)
+    console.log('[GET /chart] charts.length:', charts.length)
+    return charts
   }
   //----------------------------------------------------------------------------------------------------
 }

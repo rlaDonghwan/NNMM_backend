@@ -34,6 +34,6 @@ export class ChartConfigService {
   //----------------------------------------------------------------------------------------------------
 
   async findChartsByUser(userId: string) {
-    return this.chartModel.find({ userId, isActive: true }).exec()
+    return this.chartModel.find({ userId }).exec()
   }
 }
