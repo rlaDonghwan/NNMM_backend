@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common' // NestJS 데코레이터 및 모듈 import
+import { Controller, Post, Body, Req, UseGuards, Param } from '@nestjs/common' // NestJS 데코레이터 및 모듈 import
 import { AuthGuard } from '@nestjs/passport' // JWT 인증을 위한 AuthGuard import
 import { Request } from 'express' // Express Request 타입 import
 import { CreateEsgReportDto } from './esg-report.dto' // DTO 타입 import

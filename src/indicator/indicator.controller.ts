@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common' // NestJS의 데코레이터와 모듈 가져오기
 import { IndicatorService } from './indicator.service' // IndicatorService 가져오기
-import { IndicatorDocument } from './schemas/indicator.schema' // IndicatorDocument 타입 가져오기
+import { IndicatorDocument } from './indicator.schema' // IndicatorDocument 타입 가져오기
 
 @Controller('indicators') // 'indicators' 경로에 대한 컨트롤러 정의
 export class IndicatorController {
@@ -24,10 +24,9 @@ export class IndicatorController {
       unit: ind.unit,
     }))
   }
-
   //----------------------------------------------------------------------------------------------------
 
-  @Post() // HTTP POST 요청 처리
+  @Post() // HTTP POST 요청 처리 이거 지금 안씀
   async createMany(
     @Body() indicators: { label: string; unit: string; category: string }[],
   ): Promise<IndicatorDocument[]> {
@@ -67,10 +66,9 @@ export class IndicatorController {
 
     return result // 결과 반환
   }
-
   //----------------------------------------------------------------------------------------------------
 
-  @Post(':category/check-or-create')
+  @Post(':category/check-or-create') // 이것도 지금 안씀
   async checkOrCreate(
     @Param('category') categoryParam: string,
     @Body() body: { label: string; unit: string; group?: string },
@@ -96,4 +94,5 @@ export class IndicatorController {
 
     return indicator
   }
+  //----------------------------------------------------------------------------------------------------
 }

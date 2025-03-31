@@ -40,4 +40,6 @@ export class AuthController {
     const accessToken = this.jwtService.sign(payload)
     return { accessToken }
   }
+
+  //----------------------------------------------------------------------------------------------------
 }

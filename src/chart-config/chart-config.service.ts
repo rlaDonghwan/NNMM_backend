@@ -1,78 +1,35 @@
+// chart-config.service.ts
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Chart } from './schemas/chart-config.schema'
+import { Chart } from './chart-config.schema'
 import { Model } from 'mongoose'
 import mongoose from 'mongoose'
 import { CreateChartDto } from './chart-config.dto'
 
-@Injectable()
+@Injectable() // 이 클래스가 NestJS의 의존성 주입 시스템에서 제공자로 사용될 수 있도록 표시
 export class ChartConfigService {
   constructor(
-    @InjectModel(Chart.name)
-    private readonly chartModel: Model<Chart>,
+    @InjectModel(Chart.name) // Mongoose 모델을 의존성 주입으로 가져옴
+    private readonly chartModel: Model<Chart>, // Chart 모델을 사용하기 위한 private 변수 선언
   ) {}
+  //----------------------------------------------------------------------------------------------------
 
-  /**
-   * 사용자 커스텀 차트 생성
-   * - userId, colorSet, labels 등의 기본값 설정 포함
-   */
-  async createChart(createChartDto: CreateChartDto & { userId: string }): Promise<Chart> {
+  async createChart(createChartDto: CreateChartDto & { userId: string }) {
+    // createChart 메서드는 CreateChartDto와 userId를 포함한 데이터를 받아 새로운 차트를 생성
     const created = new this.chartModel({
-      ...createChartDto,
-      userId: new mongoose.Types.ObjectId(createChartDto.userId), // userId를 ObjectId로 변환
-      colorSet: createChartDto.colorSet ?? ['#3BAFDA'], // 색상 기본값 설정
-      labels: createChartDto.labels ?? createChartDto.targetDataKeys, // 라벨이 없을 경우 키로 대체
+      userId: new mongoose.Types.ObjectId(createChartDto.userId), // userId를 ObjectId로 변환하여 저장
+      chartType: createChartDto.chartType, // 차트 타입 설정
+      targetDataKeys: createChartDto.targetDataKeys, // 대상 데이터 키 설정
+      colorSet: createChartDto.colorSet ?? [], // 색상 세트를 설정하거나 기본값으로 빈 배열 설정
+      labels: createChartDto.labels ?? createChartDto.targetDataKeys, // 레이블을 설정하거나 기본값으로 대상 데이터 키 설정
+      years: createChartDto.years ?? [], // 연도를 설정하거나 기본값으로 빈 배열 설정
+      units: createChartDto.units ?? [], // 단위를 설정하거나 기본값으로 빈 배열 설정
+      order: createChartDto.order, // 차트의 순서 설정
+      title: createChartDto.title, // 차트 제목 설정
+      category: createChartDto.category, // 차트 카테고리 설정
     })
-    return created.save() // MongoDB에 저장
+
+    return created.save() // 생성된 차트를 데이터베이스에 저장하고 반환
   }
-
-  /**
-   * 자동 추천 차트 생성 (간단한 기본 구성)
-   * - 사용자 ID, 카테고리, 지표 키, 라벨을 받아 기본 bar 차트 생성
-   */
-  async createDefaultConfig(userId: string, category: string, indicatorKey: string, label: string) {
-    return this.chartModel.create({
-      userId: new mongoose.Types.ObjectId(userId),
-      companyName: '', // 기본 회사명 없음
-      chartType: 'bar', // 기본 차트 유형
-      category,
-      indicatorKey,
-      targetDataKeys: [indicatorKey],
-      labels: [label],
-      colorSet: ['#3BAFDA'], // 기본 색상
-    })
-  }
-
-  /**
-   * 차트 유형 추천 함수
-   * - 입력된 지표 키와 연도 정보를 기반으로 적절한 차트 유형을 추천
-   */
-  recommendChartType(data: { targetDataKeys: string[]; years?: number[] }) {
-    const keys = data.targetDataKeys
-    const years = data.years ?? []
-
-    const isSingleKey = keys.length === 1
-    const isMultiKey = keys.length > 1
-    const isMultiYear = years.length > 1
-
-    const result: string[] = []
-
-    if (isSingleKey) {
-      result.push('line', 'bar') // 단일 키일 경우 선형 및 막대 차트 추천
-    }
-    if (isMultiKey) {
-      result.push('bar', 'pie') // 여러 키일 경우 막대 및 파이 차트 추천
-    }
-    if (isMultiYear && isMultiKey) {
-      result.push('stackedBar', 'groupedBar') // 여러 해 + 여러 키일 경우 스택/그룹 막대 차트 추천
-    }
-    if (isSingleKey && isMultiYear) {
-      result.push('bar') // 단일 키 + 여러 해의 경우 막대 차트 추천
-    }
-
-    return {
-      recommended: result, // 추천 차트 유형 리스트
-      default: result[0] ?? 'bar', // 기본 차트 유형 (없으면 bar)
-    }
-  }
+  //----------------------------------------------------------------------------------------------------
 }

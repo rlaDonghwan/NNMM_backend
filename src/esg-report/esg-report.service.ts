@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose' // 모델 주입을 위한 데코
 import { Model } from 'mongoose' // Mongoose 모델 타입
 import { ESGReport, ESGReportDocument } from './esg-report.schemas' // ESGReport 관련 타입 import
 import { CreateEsgReportDto } from './esg-report.dto' // DTO import
-import { User, UserDocument } from '@/users/schemas/user.schema' // 사용자 스키마 import
+import { User, UserDocument } from '@/users/user.schema' // 사용자 스키마 import
 import mongoose from 'mongoose' // ObjectId 생성 등
 
 @Injectable() // 서비스로 등록

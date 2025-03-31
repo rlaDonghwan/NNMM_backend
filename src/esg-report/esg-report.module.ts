@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common' // NestJS 모듈 데코레이터
 import { EsgReportService } from './esg-report.service' // 서비스 import
 import { EsgReportController } from './esg-report.controller' // 컨트롤러 import
 import { ESGReport, ESGReportSchema } from './esg-report.schemas' // 스키마 import
-import { User, UserSchema } from '../users/schemas/user.schema' // 사용자 스키마 import
+import { User, UserSchema } from '../users/user.schema' // 사용자 스키마 import
 
 @Module({
   imports: [

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common' // NestJS의 Injectable 데코레이터를 가져옵니다. 이 클래스가 의존성 주입 가능한 서비스임을 나타냅니다.
 import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델을 주입하기 위한 데코레이터를 가져옵니다.
 import { Model } from 'mongoose' // Mongoose의 Model 타입을 가져옵니다.
-import { Indicator, IndicatorDocument } from './schemas/indicator.schema' // Indicator 스키마와 관련된 타입을 가져옵니다.
+import { Indicator, IndicatorDocument } from './indicator.schema' // Indicator 스키마와 관련된 타입을 가져옵니다.
 
 @Injectable() // 이 클래스가 NestJS의 의존성 주입 시스템에서 사용될 수 있도록 표시
 export class IndicatorService {
@@ -38,9 +38,11 @@ export class IndicatorService {
   async save(indicator: IndicatorDocument): Promise<Indicator> {
     return indicator.save()
   }
+  //----------------------------------------------------------------------------------------------------
 
   // label + category 기준으로 조회 (기존 문제 해결)
   async findByLabelAndCategory(label: string, category: string): Promise<Indicator | null> {
     return this.indicatorModel.findOne({ label, category }).exec()
   }
+  //----------------------------------------------------------------------------------------------------
 }
