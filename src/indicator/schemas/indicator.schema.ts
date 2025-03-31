@@ -10,10 +10,10 @@ export class Indicator {
   category: 'environmental' | 'social' | 'governance'
 
   @Prop({ required: true })
-  group: string // 중분류
+  group: string
 
   @Prop({ required: true })
-  label: string // 중분류
+  label: string
 
   @Prop({ required: true })
   unit: string //  단위

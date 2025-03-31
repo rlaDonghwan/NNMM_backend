@@ -38,4 +38,9 @@ export class IndicatorService {
   async save(indicator: IndicatorDocument): Promise<Indicator> {
     return indicator.save()
   }
+
+  // label + category 기준으로 조회 (기존 문제 해결)
+  async findByLabelAndCategory(label: string, category: string): Promise<Indicator | null> {
+    return this.indicatorModel.findOne({ label, category }).exec()
+  }
 }
