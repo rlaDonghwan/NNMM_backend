@@ -4,8 +4,9 @@ import { AuthController } from './auth.controller'
 import { UsersModule } from '../users/users.module'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
-import { JwtStrategy } from '@/auth/strategy/jwt.strategy'
+import { JwtStrategy } from '@/auth/jwt/jwt.strategy'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { JwtAuthGuard } from './jwt/jwt.guard'
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
     }),
   ],
   controllers: [AuthController], // 이 모듈의 컨트롤러로 AuthController 정의
-  providers: [AuthService, JwtStrategy], // AuthService와 JwtStrategy를 의존성 주입을 위해 제공
-  exports: [JwtModule, AuthService], // 다른 모듈에서 사용하기 위해 JwtModule과 AuthService를 내보냄
+  providers: [AuthService, JwtStrategy, JwtAuthGuard], // AuthService와 JwtStrategy를 의존성 주입을 위해 제공
+  exports: [JwtModule, AuthService, JwtAuthGuard], // 다른 모듈에서 사용하기 위해 JwtModule과 AuthService를 내보냄
 })
 export class AuthModule {} // AuthModule 클래스를 정의하고 내보냄

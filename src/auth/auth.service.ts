@@ -5,7 +5,7 @@ import { LoginDto } from './auth.dto' // 회원가입 요청 데이터를 정의
 import * as bcrypt from 'bcrypt' // 비밀번호 암호화를 위한 bcrypt 라이브러리를 가져옴
 import { JwtService } from '@nestjs/jwt' // JWT 토큰 생성을 위한 JwtService를 가져옴
 import e from 'express'
-import { UserDocument } from '../users/schemas/user.schema.ts'
+import { UserDocument } from '../users/schemas/user.schema' // UserDocument를 가져옴
 import { Types } from 'mongoose'
 
 @Injectable() // 이 클래스가 NestJS의 의존성 주입 시스템에서 사용될 수 있도록 Injectable 데코레이터를 추가
@@ -19,10 +19,6 @@ export class AuthService {
   async signup(dto: SignupDto) {
     const existingEmail = await this.usersService.findByEmail(dto.email) // 이메일로 기존 사용자 조회 (usersService의 findByEmail 메서드 호출)
     if (existingEmail) throw new ConflictException('이미 존재하는 이메일입니다') // 이미 존재하는 이메일이면 ConflictException 예외 발생
-
-    const existingName = await this.usersService.findByName(dto.name) // 이름으로 기존 사용자 조회 (usersService의 findByName 메서드 호출)
-    if (existingName) throw new ConflictException('이미 존재하는 이름입니다') // 이미 존재하는 이름이면 ConflictException 예외 발생
-
     const hashedPassword = await bcrypt.hash(dto.password, 10) // 비밀번호를 bcrypt 라이브러리를 사용해 해싱 (비밀번호 암호화)
     const user = await this.usersService.create({
       // 새로운 사용자 생성 (usersService의 create 메서드 호출)
