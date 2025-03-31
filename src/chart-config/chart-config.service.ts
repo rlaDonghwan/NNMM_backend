@@ -32,4 +32,8 @@ export class ChartConfigService {
     return created.save() // 생성된 차트를 데이터베이스에 저장하고 반환
   }
   //----------------------------------------------------------------------------------------------------
+
+  async findChartsByUser(userId: string) {
+    return this.chartModel.find({ userId, isActive: true }).exec()
+  }
 }

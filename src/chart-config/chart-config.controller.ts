@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
 import { ChartConfigService } from './chart-config.service'
 import { JwtAuthGuard } from '@/auth/jwt/jwt.guard'
 import { CreateChartDto } from './chart-config.dto'
@@ -13,6 +13,14 @@ export class ChartConfigController {
     // 요청 객체(req)와 요청 본문(dto)을 매개변수로 받음
     return this.chartConfigService.createChart({ ...dto, userId: req.user._id })
     // ChartConfigService의 createChart 메서드를 호출하며, 요청 본문과 사용자 ID를 전달
+  }
+  //----------------------------------------------------------------------------------------------------
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getChartsByUser(@Req() req) {
+    // 차트 호출
+    return this.chartConfigService.findChartsByUser(req.user._id)
   }
   //----------------------------------------------------------------------------------------------------
 }
