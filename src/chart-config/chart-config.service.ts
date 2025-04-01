@@ -15,14 +15,18 @@ export class ChartConfigService {
   //----------------------------------------------------------------------------------------------------
 
   async createChart(createChartDto: CreateChartDto & { userId: string }) {
-    // createChart 메서드는 CreateChartDto와 userId를 포함한 데이터를 받아 새로운 차트를 생성
+    // 'years'와 'value'를 분리하여 각각 배열로 변환
+    const years = createChartDto.years?.map((YearData) => YearData.years) ?? []
+    const value = createChartDto.years?.map((YearData) => YearData.value) ?? []
+
     const created = new this.chartModel({
       userId: new mongoose.Types.ObjectId(createChartDto.userId), // userId를 ObjectId로 변환하여 저장
       chartType: createChartDto.chartType, // 차트 타입 설정
       targetDataKeys: createChartDto.targetDataKeys, // 대상 데이터 키 설정
       colorSet: createChartDto.colorSet ?? [], // 색상 세트를 설정하거나 기본값으로 빈 배열 설정
       labels: createChartDto.labels ?? createChartDto.targetDataKeys, // 레이블을 설정하거나 기본값으로 대상 데이터 키 설정
-      years: createChartDto.years ?? [], // 연도를 설정하거나 기본값으로 빈 배열 설정
+      years, // 'years' 배열 설정
+      value, // 'value' 배열 설정
       units: createChartDto.units ?? [], // 단위를 설정하거나 기본값으로 빈 배열 설정
       order: createChartDto.order, // 차트의 순서 설정
       title: createChartDto.title, // 차트 제목 설정
