@@ -4,34 +4,34 @@ import { Document, Types } from 'mongoose'
 
 export type ChartDocument = Chart & Document
 
-@Schema({ timestamps: true }) // timestamps 옵션을 활성화하여 생성 및 수정 시간을 자동으로 기록
+@Schema({ timestamps: true })
 export class Chart {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true }) // User 컬렉션의 ObjectId를 참조하며 필수 값
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId // 사용자 ID
 
-  @Prop({ type: Types.ObjectId, ref: 'ESGReport' }) // ESGReport 컬렉션의 ObjectId를 참조
+  @Prop({ type: Types.ObjectId, ref: 'ESGReport' })
   reportId: Types.ObjectId // 보고서 ID
 
-  @Prop([Number]) // 숫자 배열을 저장
-  years?: number[] // 연도 배열
+  @Prop([{ years: Number, value: Number }]) // years 필드를 [{ years: number, value: number }] 형태로 수정
+  years?: { years: number; value: number }[] // 연도 배열 (연도와 값 쌍으로 구성)
 
-  @Prop({ required: true }) // 필수 값으로 차트 유형을 저장
+  @Prop({ required: true })
   chartType: string // 차트 유형
 
-  @Prop({ type: [String], required: true }) // 필수 값으로 문자열 배열을 저장
+  @Prop({ type: [String], required: true })
   targetDataKeys: string[] // 타겟 데이터 키 배열
 
-  @Prop([String]) // 선택적으로 문자열 배열을 저장
+  @Prop([String])
   colorSet?: string[] // 색상 세트 배열
 
-  @Prop([String]) // 선택적으로 문자열 배열을 저장
+  @Prop([String])
   labels?: string[] // 라벨 배열
 
-  @Prop() // 선택적으로 순서를 저장
+  @Prop()
   order?: number // 순서
 
   @Prop([String])
-  units?: string[] // 선택 사항 (필요한 경우만)
+  units?: string[] // 단위 배열
 
   @Prop()
   title?: string // 차트 제목
