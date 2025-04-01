@@ -11,8 +11,6 @@ export class EsgDashboardController {
 
   @Post()
   async create(@Req() req: Request, @Body() dto: CreateEsgDashboardDto) {
-    console.log('🍪 req.headers.cookie:', req.headers.cookie)
-    console.log('🍪 req.cookies:', req.cookies)
     const user = req.user as { _id: string }
     return this.esgDashboardService.create(user._id, dto)
   }
