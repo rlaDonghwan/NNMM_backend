@@ -1,7 +1,7 @@
 export class SignupDto {
   email: string
   name: string
-  position: string
+  companyName: string
   password: string
 }
 
