@@ -27,7 +27,7 @@ export class Chart {
   @Prop([String]) // 선택적으로 문자열 배열을 저장
   labels?: string[] // 라벨 배열
 
-  @Prop() // 선택적으로 순서를 저장
+  @Prop({ type: Number, default: 0 }) // 선택적으로 순서를 저장
   order?: number // 순서
 
   @Prop([String])

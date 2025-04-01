@@ -34,6 +34,58 @@ export class ChartConfigService {
   //----------------------------------------------------------------------------------------------------
 
   async findChartsByUser(userId: string) {
-    return this.chartModel.find({ userId }).exec()
+    // return this.chartModel.find({ userId }).exec()
+    return this.chartModel.find({ userId }).sort({ order: 1 }).exec()
+  }
+
+  //차트 드래그앤 드롭으로 순서 바꿀 떄 쓸 수 있는 녀석
+  // async updateChartOrder(orderedIds: string[]) {
+  //   console.log('[updateChartOrder] saving order for:', orderedIds)
+  //   const bulkOps = orderedIds.map((id, index) => ({
+  //     updateOne: {
+  //       filter: { _id: id },
+  //       update: { $set: { order: index } },
+  //     },
+  //   }))
+  //   return this.chartModel.bulkWrite(bulkOps)
+  // }
+  // async updateChartOrder(orderedIds: string[]) {
+  //   console.log('🟡 [updateChartOrder] Saving order for:', orderedIds)
+  //   const bulkOps = orderedIds.map((id, index) => ({
+  //     updateOne: {
+  //       filter: { _id: new mongoose.Types.ObjectId(id) },
+  //       update: { $set: { order: index } },
+  //     },
+  //   }))
+
+  //   try {
+  //     const result = await this.chartModel.bulkWrite(bulkOps)
+  //     console.log('🟢 bulkWrite result:', result)
+  //     return result
+  //   } catch (err) {
+  //     console.error('❌ bulkWrite error:', err)
+  //     throw err
+  //   }
+  // }
+  async updateChartOrder(orderedIds: string[]) {
+    console.log('🟡 [updateChartOrder] Saving order for:', orderedIds)
+
+    const bulkOps = orderedIds.map((id, index) => ({
+      updateOne: {
+        filter: { _id: id }, // ✅ string 그대로 사용
+        update: { $set: { order: index } },
+      },
+    }))
+
+    console.log('🔧 bulkOps preview:', JSON.stringify(bulkOps, null, 2))
+
+    try {
+      const result = await this.chartModel.bulkWrite(bulkOps)
+      console.log('🟢 bulkWrite result:', result)
+      return result
+    } catch (err) {
+      console.error('❌ bulkWrite error:', err)
+      throw err
+    }
   }
 }
