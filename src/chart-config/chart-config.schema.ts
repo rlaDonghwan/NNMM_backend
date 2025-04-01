@@ -27,7 +27,7 @@ export class Chart {
   @Prop([String])
   labels?: string[] // 라벨 배열
 
-  @Prop()
+  @Prop({ type: Number, default: 0 }) // 선택적으로 순서를 저장
   order?: number // 순서
 
   @Prop([String])
