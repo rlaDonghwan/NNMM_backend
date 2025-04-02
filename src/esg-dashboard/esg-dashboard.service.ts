@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
+import { Injectable, NotFoundException } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
 import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위한 데코레이터 임포트
 import { Model } from 'mongoose' // Mongoose의 Model 타입 임포트
 import { EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
+import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
 
 @Injectable() // 서비스 클래스로 선언 (의존성 주입 가능)
 export class EsgDashboardService {
@@ -19,6 +20,7 @@ export class EsgDashboardService {
     })
     return created.save() // MongoDB에 저장
   }
+  //----------------------------------------------------------------------------------------------------
 
   async findByUser(userId: string) {
     // 해당 사용자(userId)의 모든 대시보드 조회 (lean()으로 plain object로 반환)
@@ -35,14 +37,31 @@ export class EsgDashboardService {
 
     return flatCharts // 펼쳐진 차트 목록 반환
   }
+  //----------------------------------------------------------------------------------------------------
 
   async findByUserAndCategory(userId: string, category: string) {
     // 사용자 ID와 카테고리를 기준으로 단일 대시보드 문서 조회
     return this.esgDashboardModel.findOne({ userId, category }).exec()
   }
+  //----------------------------------------------------------------------------------------------------
 
-  async deleteById(id: string) {
-    // 특정 ID의 대시보드 삭제
-    return this.esgDashboardModel.findByIdAndDelete(id).exec()
+  async update(id: string, userId: string, updateDto: UpdateEsgDashboardDto) {
+    const existing = await this.esgDashboardModel.findOne({ _id: id, userId })
+    if (!existing) {
+      throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
+    }
+
+    Object.assign(existing, updateDto)
+    return existing.save()
   }
+  //----------------------------------------------------------------------------------------------------
+
+  async delete(id: string, userId: string) {
+    const result = await this.esgDashboardModel.deleteOne({ _id: id, userId })
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('삭제할 차트를 찾을 수 없습니다.')
+    }
+    return { message: '삭제되었습니다.' }
+  }
+  //----------------------------------------------------------------------------------------------------
 }
