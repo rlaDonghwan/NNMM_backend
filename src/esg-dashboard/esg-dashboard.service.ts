@@ -30,8 +30,8 @@ export class EsgDashboardService {
     const flatCharts = dashboards.flatMap((d) => {
       return d.charts.map((chart) => ({
         ...chart,
-        chartId: chart._id, // ✅ chart 고유 ID는 따로 보존
-        dashboardId: d._id, // ✅ 대시보드 ID 명확히 전달
+        chartId: chart._id, // chart 고유 ID는 따로 보존
+        dashboardId: d._id, // 대시보드 ID 명확히 전달
         category: d.category,
       }))
     })
@@ -60,7 +60,7 @@ export class EsgDashboardService {
     const results = await Promise.all(
       updates.map(({ dashboardId, chartId, newOrder }) => {
         if (!isValidObjectId(dashboardId) || !isValidObjectId(chartId)) {
-          console.warn('❌ Invalid ID:', { dashboardId, chartId })
+          console.warn(' Invalid ID:', { dashboardId, chartId })
           return { modifiedCount: 0 }
         }
 
