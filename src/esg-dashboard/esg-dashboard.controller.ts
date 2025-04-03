@@ -36,6 +36,7 @@ export class EsgDashboardController {
     const user = req.user as { _id: string }
     return this.esgDashboardService.updateChartOrders(user._id, charts)
   }
+  //----------------------------------------------------------------------------------------------------
 
   @Get() // GET 요청 처리 (해당 사용자의 모든 대시보드 조회)
   async getAllByUser(@Req() req: Request) {
