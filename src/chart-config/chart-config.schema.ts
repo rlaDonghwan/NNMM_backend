@@ -27,8 +27,11 @@ export class Chart {
   @Prop([String])
   labels?: string[] // 라벨 배열
 
-  @Prop({ type: Number, default: 0 }) // 선택적으로 순서를 저장
-  order?: number // 순서
+  //차트 순서 관련 원래 있던 코드
+  // @Prop({ type: Number, default: 0 }) // 선택적으로 순서를 저장
+  // order?: number // 순서
+  @Prop({ default: 999 })
+  order: number
 
   @Prop([String])
   units?: string[] // 단위 배열
