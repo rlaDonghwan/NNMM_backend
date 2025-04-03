@@ -44,7 +44,7 @@ export class AuthService {
     return {
       message: '로그인 성공',
       token,
-      user: { email: user.email, name: user.name },
+      user: { email: user.email, name: user.name, companyName: user.companyName },
     }
   }
   //----------------------------------------------------------------------------------------------------
