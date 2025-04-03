@@ -4,6 +4,7 @@ import { Model } from 'mongoose' // Mongoose의 Model 타입 임포트
 import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
 import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
+import { Types } from 'mongoose'
 
 @Injectable() // 서비스 클래스로 선언 (의존성 주입 가능)
 export class EsgDashboardService {
@@ -46,9 +47,13 @@ export class EsgDashboardService {
     // charts 배열을 펼쳐서(flatMap) 각 chart에 상위 속성(_id, category) 추가
     const flatCharts = dashboards.flatMap((d) => {
       return d.charts.map((chart) => ({
+        // ...chart,
+        // _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적)
+        // category: d.category, // 상위 category 정보도 차트에 포함
         ...chart,
-        _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적)
-        category: d.category, // 상위 category 정보도 차트에 포함
+        chartId: chart._id,
+        dashboardId: d._id,
+        category: d.category,
       }))
     })
 
@@ -113,4 +118,30 @@ export class EsgDashboardService {
     return { success: true }
   }
   //----------------------------------------------------------------------------------------------------
+  async updateChartFavorite(
+    dashboardId: string,
+    chartId: string,
+    userId: string,
+    isFavorite: boolean,
+  ) {
+    const dashboard = await this.esgDashboardModel.findOne({
+      _id: dashboardId,
+      userId: new Types.ObjectId(userId),
+    })
+
+    if (!dashboard) {
+      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
+    }
+
+    const chart = dashboard.charts.find((c: any) => String(c._id) === String(chartId))
+
+    if (!chart) {
+      throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
+    }
+
+    chart.isFavorite = isFavorite
+    await dashboard.save()
+
+    return { success: true, chartId, isFavorite }
+  }
 }

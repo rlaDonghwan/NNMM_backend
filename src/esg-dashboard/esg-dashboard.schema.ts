@@ -23,6 +23,7 @@ export class EsgChart {
   @Prop({ required: true }) unit: string
   @Prop({ type: [Number], required: true }) years: number[]
   @Prop({ type: [EsgChartField], required: true }) fields: EsgChartField[]
+  @Prop({ default: false }) isFavorite: boolean
 }
 
 @Schema({ timestamps: true })

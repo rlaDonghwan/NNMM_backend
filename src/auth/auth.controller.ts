@@ -30,10 +30,10 @@ export class AuthController {
   @Get('text-token')
   getTestToken(): { accessToken: string } {
     const payload = {
-      sub: '67e245761c6463a49d5ac899', // ✅ 너의 유저 ID
-      email: 'kdhe@naver.com',
-      name: '김동환',
-      companyName: '삼성전자',
+      sub: '67e414045bf2e5a627b635ff', // ✅ 너의 유저 ID
+      email: 'jin@naver.com',
+      name: '12111',
+      companyName: '123',
       role: 'user',
     }
 
