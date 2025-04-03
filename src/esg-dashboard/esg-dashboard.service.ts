@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위�
 import { isValidObjectId, Model, Types } from 'mongoose' // Mongoose의 Model 타입 임포트
 import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
-import { UpdateEsgDashboardDto } from './update-esg-dashboard.dto' // 대시보드 업데이트 DTO 임포트
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
 @Injectable() // 서비스 클래스로 선언 (의존성 주입 가능)
@@ -41,10 +40,6 @@ export class EsgDashboardService {
   }
   //----------------------------------------------------------------------------------------------------
 
-  // async findByUserAndCategory(userId: string, category: string) {
-  //   // 사용자 ID와 카테고리를 기준으로 단일 대시보드 문서 조회
-  //   return this.esgDashboardModel.findOne({ userId, category }).exec()
-  // }
   async findByUserAndCategory(userId: string, category: string) {
     const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
 
@@ -52,7 +47,7 @@ export class EsgDashboardService {
 
     const chartsWithDashboardId = dashboard.charts.map((chart) => ({
       ...chart,
-      dashboardId: dashboard._id, // ✅ 추가!
+      dashboardId: dashboard._id,
       category: dashboard.category,
     }))
 

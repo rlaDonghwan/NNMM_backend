@@ -43,7 +43,7 @@ export class EsgDashboardController {
   }
   //----------------------------------------------------------------------------------------------------
 
-  @Patch('batch-update-orders')
+  @Patch('batch-update-orders') // 대시보드 ID 랑 Chart ID 로 차트 순서 변경
   async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
     return this.esgDashboardService.batchUpdateOrders(updates)
   }
