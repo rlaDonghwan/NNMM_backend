@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
 import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위한 데코레이터 임포트
-import { Model, Types } from 'mongoose' // Mongoose의 Model 타입 임포트
+import { isValidObjectId, Model, Types } from 'mongoose' // Mongoose의 Model 타입 임포트
 import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
 import { UpdateEsgDashboardDto } from './update-esg-dashboard.dto' // 대시보드 업데이트 DTO 임포트
@@ -31,8 +31,9 @@ export class EsgDashboardService {
     const flatCharts = dashboards.flatMap((d) => {
       return d.charts.map((chart) => ({
         ...chart,
-        _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적)
-        category: d.category, // 상위 category 정보도 차트에 포함
+        chartId: chart._id, // ✅ chart 고유 ID는 따로 보존
+        dashboardId: d._id, // ✅ 대시보드 ID 명확히 전달
+        category: d.category,
       }))
     })
 
@@ -40,16 +41,35 @@ export class EsgDashboardService {
   }
   //----------------------------------------------------------------------------------------------------
 
+  // async findByUserAndCategory(userId: string, category: string) {
+  //   // 사용자 ID와 카테고리를 기준으로 단일 대시보드 문서 조회
+  //   return this.esgDashboardModel.findOne({ userId, category }).exec()
+  // }
   async findByUserAndCategory(userId: string, category: string) {
-    // 사용자 ID와 카테고리를 기준으로 단일 대시보드 문서 조회
-    return this.esgDashboardModel.findOne({ userId, category }).exec()
+    const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
+
+    if (!dashboard) return []
+
+    const chartsWithDashboardId = dashboard.charts.map((chart) => ({
+      ...chart,
+      dashboardId: dashboard._id, // ✅ 추가!
+      category: dashboard.category,
+    }))
+
+    return chartsWithDashboardId
   }
+
   //----------------------------------------------------------------------------------------------------
 
   async batchUpdateOrders(updates: UpdateChartOrderBatchDto[]) {
     const results = await Promise.all(
-      updates.map(({ dashboardId, chartId, newOrder }) =>
-        this.esgDashboardModel.updateOne(
+      updates.map(({ dashboardId, chartId, newOrder }) => {
+        if (!isValidObjectId(dashboardId) || !isValidObjectId(chartId)) {
+          console.warn('❌ Invalid ID:', { dashboardId, chartId })
+          return { modifiedCount: 0 }
+        }
+
+        return this.esgDashboardModel.updateOne(
           {
             _id: new Types.ObjectId(dashboardId),
             'charts._id': new Types.ObjectId(chartId),
@@ -57,8 +77,8 @@ export class EsgDashboardService {
           {
             $set: { 'charts.$.order': newOrder },
           },
-        ),
-      ),
+        )
+      }),
     )
 
     const modifiedCount = results.reduce((acc, r) => acc + r.modifiedCount, 0)

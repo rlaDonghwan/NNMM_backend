@@ -42,6 +42,7 @@ export class EsgDashboardController {
     return this.esgDashboardService.findByUserAndCategory(user._id, category) // 사용자 ID와 카테고리로 필터링하여 조회
   }
   //----------------------------------------------------------------------------------------------------
+
   @Patch('batch-update-orders')
   async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
     return this.esgDashboardService.batchUpdateOrders(updates)
