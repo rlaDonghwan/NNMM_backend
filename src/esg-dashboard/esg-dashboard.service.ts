@@ -22,18 +22,33 @@ export class EsgDashboardService {
   }
   //----------------------------------------------------------------------------------------------------
 
+  // async findByUser(userId: string) {
+  //   // 해당 사용자(userId)의 모든 대시보드 조회 (lean()으로 plain object로 반환)
+  //   const dashboards = await this.esgDashboardModel.find({ userId })
+
+  //   // charts 배열을 펼쳐서(flatMap) 각 chart에 상위 속성(_id, category) 추가
+  //   const flatCharts = dashboards.flatMap((dashboard) => {
+  //     return dashboard.charts.map((chart: any) => ({
+  //       ...chart,
+  //       // _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적) + 원래 있던 코드
+  //       chartId: chart._id,
+  //       dashboardId: dashboard._id,
+  //       category: dashboard.category, // 상위 category 정보도 차트에 포함
+  //     }))
+  //   })
+
+  //   return flatCharts // 펼쳐진 차트 목록 반환
+  // }
   async findByUser(userId: string) {
     // 해당 사용자(userId)의 모든 대시보드 조회 (lean()으로 plain object로 반환)
-    const dashboards = await this.esgDashboardModel.find({ userId })
+    const dashboards = await this.esgDashboardModel.find({ userId }).lean()
 
     // charts 배열을 펼쳐서(flatMap) 각 chart에 상위 속성(_id, category) 추가
-    const flatCharts = dashboards.flatMap((dashboard) => {
-      return dashboard.charts.map((chart: any) => ({
+    const flatCharts = dashboards.flatMap((d) => {
+      return d.charts.map((chart) => ({
         ...chart,
-        // _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적) + 원래 있던 코드
-        chartId: chart._id,
-        dashboardId: dashboard._id,
-        category: dashboard.category, // 상위 category 정보도 차트에 포함
+        _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적)
+        category: d.category, // 상위 category 정보도 차트에 포함
       }))
     })
 
@@ -97,5 +112,5 @@ export class EsgDashboardService {
 
     return { success: true }
   }
-
+  //----------------------------------------------------------------------------------------------------
 }

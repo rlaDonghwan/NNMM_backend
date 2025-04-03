@@ -28,15 +28,6 @@ export class EsgDashboardController {
   }
   //----------------------------------------------------------------------------------------------------
 
-  @Post('order')
-  async updateChartOrders(
-    @Req() req: Request,
-    @Body('charts') charts: { id: string; order: number }[],
-  ) {
-    const user = req.user as { _id: string }
-    return this.esgDashboardService.updateChartOrders(user._id, charts)
-  }
-
   @Get() // GET 요청 처리 (해당 사용자의 모든 대시보드 조회)
   async getAllByUser(@Req() req: Request) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
@@ -66,6 +57,16 @@ export class EsgDashboardController {
   @UseGuards(JwtAuthGuard)
   async deleteDashboard(@Param('id') id: string, @Req() req: any) {
     return this.esgDashboardService.delete(id, req.user.userId)
+  }
+  //----------------------------------------------------------------------------------------------------
+
+  @Post('order')
+  async updateChartOrders(
+    @Req() req: Request,
+    @Body('charts') charts: { id: string; order: number }[],
+  ) {
+    const user = req.user as { _id: string }
+    return this.esgDashboardService.updateChartOrders(user._id, charts)
   }
   //----------------------------------------------------------------------------------------------------
 }
