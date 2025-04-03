@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
 import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위한 데코레이터 임포트
 import { Model } from 'mongoose' // Mongoose의 Model 타입 임포트
-import { EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
+import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
 
 @Injectable() // 서비스 클래스로 선언 (의존성 주입 가능)
@@ -22,14 +22,16 @@ export class EsgDashboardService {
 
   async findByUser(userId: string) {
     // 해당 사용자(userId)의 모든 대시보드 조회 (lean()으로 plain object로 반환)
-    const dashboards = await this.esgDashboardModel.find({ userId }).lean()
+    const dashboards = await this.esgDashboardModel.find({ userId })
 
     // charts 배열을 펼쳐서(flatMap) 각 chart에 상위 속성(_id, category) 추가
-    const flatCharts = dashboards.flatMap((d) => {
-      return d.charts.map((chart) => ({
+    const flatCharts = dashboards.flatMap((dashboard) => {
+      return dashboard.charts.map((chart: any) => ({
         ...chart,
-        _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적)
-        category: d.category, // 상위 category 정보도 차트에 포함
+        // _id: d._id, // 대시보드 문서의 ID를 차트에 부여 (식별 목적) + 원래 있던 코드
+        chartId: chart._id,
+        dashboardId: dashboard._id,
+        category: dashboard.category, // 상위 category 정보도 차트에 포함
       }))
     })
 
@@ -44,5 +46,35 @@ export class EsgDashboardService {
   async deleteById(id: string) {
     // 특정 ID의 대시보드 삭제
     return this.esgDashboardModel.findByIdAndDelete(id).exec()
+  }
+
+  async updateChartOrders(userId: string, updatedCharts: { id: string; order: number }[]) {
+    const dashboards = await this.esgDashboardModel.find({ userId })
+
+    for (const dashboard of dashboards) {
+      const chartMap = new Map(updatedCharts.map((c) => [c.id, c.order]))
+      let modified = false
+
+      const reordered = dashboard.charts
+        .slice()
+        .sort((a, b) => {
+          const orderA = chartMap.get(String((a as any)._id)) ?? a.order
+          const orderB = chartMap.get(String((b as any)._id)) ?? b.order
+          return orderA - orderB
+        })
+        .map((chart, index) => {
+          const newOrder = index + 1
+          modified = true
+          return { ...chart, order: newOrder } // ✅ 안전하게 복사
+        })
+
+      dashboard.charts = reordered
+
+      if (modified) {
+        await dashboard.save()
+      }
+    }
+
+    return { success: true }
   }
 }

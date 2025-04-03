@@ -15,6 +15,15 @@ export class EsgDashboardController {
     return this.esgDashboardService.create(user._id, dto) // 서비스에 생성 요청
   }
 
+  @Post('order')
+  async updateChartOrders(
+    @Req() req: Request,
+    @Body('charts') charts: { id: string; order: number }[],
+  ) {
+    const user = req.user as { _id: string }
+    return this.esgDashboardService.updateChartOrders(user._id, charts)
+  }
+
   @Get() // GET 요청 처리 (해당 사용자의 모든 대시보드 조회)
   async getAllByUser(@Req() req: Request) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
