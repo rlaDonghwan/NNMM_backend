@@ -1,8 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common' // NestJS의 데코레이터 및 요청 관련 유틸 가져오기
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common' // NestJS의 데코레이터 및 요청 관련 유틸 가져오기
 import { EsgDashboardService } from './esg-dashboard.service' // ESG 대시보드 서비스 임포트
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // ESG 대시보드 생성 DTO 임포트
 import { JwtAuthGuard } from '@/auth/jwt/jwt.guard' // JWT 인증 가드 임포트
 import { Request } from 'express' // Express의 Request 타입 임포트
+import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
 
 @Controller('esg-dashboard') // 이 컨트롤러는 '/esg-dashboard' 경로에 매핑됨
 @UseGuards(JwtAuthGuard) // 모든 라우트에 JWT 인증 가드 적용 (로그인한 사용자만 접근 가능)
@@ -14,6 +26,7 @@ export class EsgDashboardController {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.create(user._id, dto) // 서비스에 생성 요청
   }
+  //----------------------------------------------------------------------------------------------------
 
   @Post('order')
   async updateChartOrders(
@@ -29,15 +42,30 @@ export class EsgDashboardController {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.findByUser(user._id) // 사용자 ID로 대시보드 조회
   }
+  //----------------------------------------------------------------------------------------------------
 
   @Get('by-category') // GET 요청 처리 (카테고리별 대시보드 조회)
   async getByCategory(@Req() req: Request, @Query('category') category: string) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.findByUserAndCategory(user._id, category) // 사용자 ID와 카테고리로 필터링하여 조회
   }
+  //----------------------------------------------------------------------------------------------------
 
-  @Delete(':id') // DELETE 요청 처리 (특정 ID의 대시보드 삭제)
-  async delete(@Param('id') id: string) {
-    return this.esgDashboardService.deleteById(id) // 서비스에 삭제 요청
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  async updateDashboard(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateEsgDashboardDto,
+    @Req() req: any,
+  ) {
+    return this.esgDashboardService.update(id, req.user.userId, updateDto)
   }
+  //----------------------------------------------------------------------------------------------------
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async deleteDashboard(@Param('id') id: string, @Req() req: any) {
+    return this.esgDashboardService.delete(id, req.user.userId)
+  }
+  //----------------------------------------------------------------------------------------------------
 }
