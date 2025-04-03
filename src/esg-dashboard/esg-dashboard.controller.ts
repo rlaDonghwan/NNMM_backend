@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -14,7 +15,7 @@ import { EsgDashboardService } from './esg-dashboard.service' // ESG 대시보�
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // ESG 대시보드 생성 DTO 임포트
 import { JwtAuthGuard } from '@/auth/jwt/jwt.guard' // JWT 인증 가드 임포트
 import { Request } from 'express' // Express의 Request 타입 임포트
-import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
+import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
 @Controller('esg-dashboard') // 이 컨트롤러는 '/esg-dashboard' 경로에 매핑됨
 @UseGuards(JwtAuthGuard) // 모든 라우트에 JWT 인증 가드 적용 (로그인한 사용자만 접근 가능)
@@ -41,32 +42,10 @@ export class EsgDashboardController {
     return this.esgDashboardService.findByUserAndCategory(user._id, category) // 사용자 ID와 카테고리로 필터링하여 조회
   }
   //----------------------------------------------------------------------------------------------------
-
-  @Put(':id')
-  @UseGuards(JwtAuthGuard)
-  async updateDashboard(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateEsgDashboardDto,
-    @Req() req: any,
-  ) {
-    return this.esgDashboardService.update(id, req.user.userId, updateDto)
+  @Patch('batch-update-orders')
+  async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
+    return this.esgDashboardService.batchUpdateOrders(updates)
   }
-  //----------------------------------------------------------------------------------------------------
 
-  @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  async deleteDashboard(@Param('id') id: string, @Req() req: any) {
-    return this.esgDashboardService.delete(id, req.user.userId)
-  }
-  //----------------------------------------------------------------------------------------------------
-
-  @Post('order')
-  async updateChartOrders(
-    @Req() req: Request,
-    @Body('charts') charts: { id: string; order: number }[],
-  ) {
-    const user = req.user as { _id: string }
-    return this.esgDashboardService.updateChartOrders(user._id, charts)
-  }
   //----------------------------------------------------------------------------------------------------
 }

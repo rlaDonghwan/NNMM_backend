@@ -15,6 +15,9 @@ export class EsgChartField {
 
 @Schema({ _id: true })
 export class EsgChart {
+  set(arg0: string, newOrder: any) {
+    throw new Error('Method not implemented.')
+  }
   @Prop({ type: Types.ObjectId, default: () => new Types.ObjectId() })
   _id: Types.ObjectId
   @Prop({ required: true }) chartType: string
@@ -23,6 +26,7 @@ export class EsgChart {
   @Prop({ required: true }) unit: string
   @Prop({ type: [Number], required: true }) years: number[]
   @Prop({ type: [EsgChartField], required: true }) fields: EsgChartField[]
+  category: any
 }
 
 @Schema({ timestamps: true })
