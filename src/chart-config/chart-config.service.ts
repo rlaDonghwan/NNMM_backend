@@ -71,25 +71,57 @@ export class ChartConfigService {
   //     throw err
   //   }
   // }
-  async updateChartOrder(orderedIds: string[]) {
-    console.log('🟡 [updateChartOrder] Saving order for:', orderedIds)
 
-    const bulkOps = orderedIds.map((id, index) => ({
-      updateOne: {
-        filter: { _id: id }, // ✅ string 그대로 사용
-        update: { $set: { order: index } },
-      },
-    }))
+  //수정 전 updateChartOrder 밑에 수정본 만들테니 밑에가 문제면 밑에 삭제하고 이 코드 쓰기
+  // async updateChartOrder(orderedIds: string[]) {
+  //   console.log('🟡 [updateChartOrder] Saving order for:', orderedIds)
 
-    console.log('🔧 bulkOps preview:', JSON.stringify(bulkOps, null, 2))
+  //   const bulkOps = orderedIds.map((id, index) => ({
+  //     updateOne: {
+  //       filter: { _id: id }, // ✅ string 그대로 사용
+  //       update: { $set: { order: index } },
+  //     },
+  //   }))
 
-    try {
-      const result = await this.chartModel.bulkWrite(bulkOps)
-      console.log('🟢 bulkWrite result:', result)
-      return result
-    } catch (err) {
-      console.error('❌ bulkWrite error:', err)
-      throw err
-    }
+  //   console.log('🔧 bulkOps preview:', JSON.stringify(bulkOps, null, 2))
+
+  //   try {
+  //     const result = await this.chartModel.bulkWrite(bulkOps)
+  //     console.log('🟢 bulkWrite result:', result)
+  //     return result
+  //   } catch (err) {
+  //     console.error('❌ bulkWrite error:', err)
+  //     throw err
+  //   }
+  // }
+
+  // async updateChartOrder(charts: { id: string; order: number }[]) {
+  //   const bulkOps = charts.map((chart) => ({
+  //     updateOne: {
+  //       filter: { _id: chart.id },
+  //       update: { $set: { order: chart.order } },
+  //     },
+  //   }))
+  //   try {
+  //     const result = await this.chartModel.bulkWrite(bulkOps)
+  //     return result
+  //   } catch (err) {
+  //     throw err
+  //   }
+  // }
+  async updateChartOrder(charts: { id: string; order: number }[]) {
+    const bulkOps = charts
+      .filter((chart) => !!chart.id && mongoose.Types.ObjectId.isValid(chart.id))
+      .map((chart) => ({
+        updateOne: {
+          filter: { _id: new mongoose.Types.ObjectId(chart.id) },
+          update: { $set: { order: chart.order } },
+        },
+      }))
+
+    const result = await this.chartModel.bulkWrite(bulkOps)
+    console.log('🟢 bulkWrite result:', JSON.stringify(result, null, 2))
+
+    return result
   }
 }

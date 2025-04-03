@@ -7,11 +7,33 @@ import { CreateChartDto } from './chart-config.dto'
 export class ChartConfigController {
   constructor(private readonly chartConfigService: ChartConfigService) {} // ChartConfigService를 의존성 주입
 
-  @Post('order') // HTTP POST 요청을 처리하는 핸들러로 지정
-  async updateOrder(@Body('orderedIds') orderedIds: string[]) {
-    console.log('[POST/chart/order] orderlists:', orderedIds)
-    return this.chartConfigService.updateChartOrder(orderedIds)
+  //원래 이 코드였음
+  // @Post('order') // HTTP POST 요청을 처리하는 핸들러로 지정
+  // async updateOrder(@Body('orderedIds') orderedIds: string[]) {
+  //   console.log('[POST/chart/order] orderlists:', orderedIds)
+  //   return this.chartConfigService.updateChartOrder(orderedIds)
+  // }
+  // @Post('order')
+  // async updateChartOrder(@Body() body: { charts: { id: string; order: number }[] }) {
+  //   console.log('🟡 [Controller] body:', body)
+  //   return this.chartConfigService.updateChartOrder(body.charts)
+  // }
+  @Post('order')
+  async updateChartOrder(@Body() body: any) {
+    console.log('📦 [Controller] 받은 body:', JSON.stringify(body, null, 2))
+
+    if (!body?.charts || !Array.isArray(body.charts)) {
+      console.error('❌ charts 배열이 없습니다:', body)
+      throw new Error('Invalid request body: charts 배열이 필요합니다.')
+    }
+
+    body.charts.forEach((chart, index) => {
+      console.log(`🔢 [Controller] chart ${index} - id: ${chart.id}, order: ${chart.order}`)
+    })
+
+    return this.chartConfigService.updateChartOrder(body.charts)
   }
+
   @UseGuards(JwtAuthGuard) // JwtAuthGuard를 사용하여 인증된 요청만 처리
   async create(@Req() req, @Body() dto: CreateChartDto) {
     // 요청 객체(req)와 요청 본문(dto)을 매개변수로 받음

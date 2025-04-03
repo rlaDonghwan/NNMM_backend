@@ -13,8 +13,10 @@ export class EsgChartField {
   @Prop({ type: Object, required: true }) data: Record<number, number>
 }
 
-@Schema({ _id: false })
+@Schema({ _id: true })
 export class EsgChart {
+  @Prop({ type: Types.ObjectId, default: () => new Types.ObjectId() })
+  _id: Types.ObjectId
   @Prop({ required: true }) chartType: string
   @Prop({ required: true }) title: string
   @Prop({ required: true }) order: number
