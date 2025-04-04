@@ -19,7 +19,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ExtractJwt.fromAuthHeaderAsBearerToken(), // Authorization 헤더에서 Bearer 토큰 방식으로 JWT 추출
         (req: Request) => {
           // 요청 객체에서 쿠키를 통해 JWT 추출
-          console.log('👉 쿠키 accessToken:', req?.cookies?.accessToken) // 쿠키에 저장된 accessToken 로그 출력
           return req?.cookies?.accessToken // 쿠키에서 accessToken 반환
         },
       ]),
@@ -33,7 +32,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // JWT의 payload를 검증하는 메서드
     console.log('👉 JWT payload:', payload) // JWT payload 로그 출력
     const user = await this.usersService.findById(payload.sub) // payload의 sub 필드로 사용자 조회
-    console.log('👉 JWT user:', user) // 조회된 사용자 정보 로그 출력
     if (!user) {
       // 사용자가 없으면 예외 발생
       throw new Error('Invalid token payload') // 유효하지 않은 토큰 payload 예외

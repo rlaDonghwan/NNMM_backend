@@ -8,6 +8,7 @@ import { DatabaseModule } from './database/database.module'
 import { ChartConfigModule } from '@/chart-config/chart-config.module'
 import { IndicatorModule } from './indicator/indicator.module'
 import { EsgReportModule } from './esg-report/esg-report.module'
+import { EsgDashboardModule } from './esg-dashboard/esg-dashboard.module'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EsgReportModule } from './esg-report/esg-report.module'
     ChartConfigModule,
     IndicatorModule,
     EsgReportModule,
+    EsgDashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
