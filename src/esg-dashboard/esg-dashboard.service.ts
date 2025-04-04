@@ -1,114 +1,97 @@
-import { Injectable, NotFoundException } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
-import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위한 데코레이터 임포트
-import { Model } from 'mongoose' // Mongoose의 Model 타입 임포트
-import { EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
-import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
-import { isValidObjectId, Model, Types } from 'mongoose' // Mongoose의 Model 타입 임포트
-import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
-import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { isValidObjectId, Model, Types } from 'mongoose'
+import { EsgDashboard, EsgDashboardDocument, EsgChart } from './esg-dashboard.schema'
+import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto'
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
-
-@Injectable() // 서비스 클래스로 선언 (의존성 주입 가능)
+@Injectable()
 export class EsgDashboardService {
   constructor(
-    @InjectModel(EsgDashboard.name) // EsgDashboard 모델을 주입
-    private readonly esgDashboardModel: Model<EsgDashboardDocument>, // Mongoose 모델 타입으로 선언
+    @InjectModel(EsgDashboard.name)
+    private readonly esgDashboardModel: Model<EsgDashboardDocument>,
   ) {}
+
   //----------------------------------------------------------------------------------------------------
   async create(userId: string, dto: CreateEsgDashboardDto) {
-    // 새 ESG 대시보드 생성 (userId와 DTO 값 포함)
-    const created = new this.esgDashboardModel({
-      userId,
-      ...dto,
-    })
-    return created.save() // MongoDB에 저장
+    const created = new this.esgDashboardModel({ userId, ...dto })
+    return created.save()
   }
+
   //----------------------------------------------------------------------------------------------------
   async findByUser(userId: string) {
-    // 해당 사용자(userId)의 모든 대시보드 조회 (lean()으로 plain object로 반환)
     const dashboards = await this.esgDashboardModel.find({ userId }).lean()
 
-    // charts 배열을 펼쳐서(flatMap) 각 chart에 상위 속성(_id, category) 추가
-    const flatCharts = dashboards.flatMap((d) => {
-      return d.charts.map((chart) => ({
+    const flatCharts = dashboards.flatMap((d) =>
+      d.charts.map((chart) => ({
         ...chart,
-        chartId: chart._id, // chart 고유 ID는 따로 보존
-        dashboardId: d._id, // 대시보드 ID 명확히 전달
+        chartId: chart._id,
+        dashboardId: d._id,
         category: d.category,
-      }))
-    })
+      })),
+    )
 
-    return flatCharts // 펼쳐진 차트 목록 반환
+    return flatCharts
   }
+
   //----------------------------------------------------------------------------------------------------
-async findByUserAndCategory(userId: string, category: string) {
+  async findByUserAndCategory(userId: string, category: string) {
     const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
 
     if (!dashboard) return []
 
-    const chartsWithDashboardId = dashboard.charts.map((chart) => ({
+    return dashboard.charts.map((chart) => ({
       ...chart,
       dashboardId: dashboard._id,
       category: dashboard.category,
     }))
-
-    return chartsWithDashboardId
   }
+
   //----------------------------------------------------------------------------------------------------
   async findDashboardById(dashboardId: string, userId: string) {
     const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).lean()
+
     if (!dashboard) {
       throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
     }
+
     return dashboard
   }
+
   //----------------------------------------------------------------------------------------------------
-  // 특정 차트 수정
   async updateChart(
     dashboardId: string,
     chartId: string,
     userId: string,
     updateDto: UpdateEsgChartDto,
   ) {
-    const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).exec()
+    const dashboard = await this.esgDashboardModel.findOne({
+      _id: dashboardId,
+      userId,
+    })
 
     if (!dashboard) {
       throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
     }
 
     const chart = dashboard.charts.find((chart) => chart._id.toString() === chartId)
+
     if (!chart) {
       throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
     }
 
-    // 업데이트 적용
     Object.assign(chart, updateDto)
 
     await dashboard.save()
     return chart
   }
 
-    const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
-
-    if (!dashboard) return []
-
-    const chartsWithDashboardId = dashboard.charts.map((chart) => ({
-      ...chart,
-      dashboardId: dashboard._id,
-      category: dashboard.category,
-    }))
-
-    return chartsWithDashboardId
-  }
-
   //----------------------------------------------------------------------------------------------------
-
   async batchUpdateOrders(updates: UpdateChartOrderBatchDto[]) {
     const results = await Promise.all(
       updates.map(({ dashboardId, chartId, newOrder }) => {
         if (!isValidObjectId(dashboardId) || !isValidObjectId(chartId)) {
-          console.warn(' Invalid ID:', { dashboardId, chartId })
+          console.warn('❌ Invalid ID:', { dashboardId, chartId })
           return { modifiedCount: 0 }
         }
 
@@ -135,7 +118,4 @@ async findByUserAndCategory(userId: string, category: string) {
       updated: modifiedCount,
     }
   }
-
-  //----------------------------------------------------------------------------------------------------
-
 }
