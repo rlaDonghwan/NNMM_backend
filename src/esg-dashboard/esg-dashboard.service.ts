@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
+
+import { Injectable, NotFoundException } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
+import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위한 데코레이터 임포트
+import { Model } from 'mongoose' // Mongoose의 Model 타입 임포트
+import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
+import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
+import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
+import { Types } from 'mongoose'
 import { isValidObjectId, Model, Types } from 'mongoose'
-import { EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema'
 import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto'
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
@@ -25,6 +30,10 @@ export class EsgDashboardService {
         ...chart,
         chartId: chart._id,
         dashboardId: d._id,
+        userId: d.userId,
+        category: d.category,
+      }))
+    })
         category: d.category,
       })),
     )
@@ -81,6 +90,33 @@ export class EsgDashboardService {
     return chart
   }
   //----------------------------------------------------------------------------------------------------
+
+  async updateChartFavorite(
+    dashboardId: string,
+    chartId: string,
+    userId: string,
+    isFavorite: boolean,
+  ) {
+    const dashboard = await this.esgDashboardModel.findOne({
+      _id: dashboardId,
+      userId: new Types.ObjectId(userId),
+    })
+
+    if (!dashboard) {
+      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
+    }
+
+    const chart = dashboard.charts.find((c: any) => String(c._id) === String(chartId))
+
+    if (!chart) {
+      throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
+    }
+
+    chart.isFavorite = isFavorite
+    await dashboard.save()
+
+    return { success: true, chartId, isFavorite }
+
   async batchUpdateOrders(updates: UpdateChartOrderBatchDto[]) {
     const results = await Promise.all(
       updates.map(({ dashboardId, chartId, newOrder }) => {
