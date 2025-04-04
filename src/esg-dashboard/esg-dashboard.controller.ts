@@ -30,23 +30,6 @@ export class EsgDashboardController {
     return this.esgDashboardService.findByUserAndCategory(user._id, category) // 사용자 ID와 카테고리로 필터링하여 조회
   }
   //----------------------------------------------------------------------------------------------------
-  @Get(':dashboardId') // GET 요청 처리 (특정 대시보드 조회)
-  async getDashboardById(@Param('dashboardId') dashboardId: string, @Req() req: Request) {
-    const user = req.user as { _id: string }
-    return this.esgDashboardService.findDashboardById(dashboardId, user._id)
-  }
-  //----------------------------------------------------------------------------------------------------
-  @Patch(':dashboardId/charts/:chartId')
-  async updateChart(
-    @Param('dashboardId') dashboardId: string,
-    @Param('chartId') chartId: string,
-    @Body() updateDto: UpdateEsgChartDto,
-    @Req() req: Request,
-  ) {
-    const user = req.user as { _id: string }
-    return this.esgDashboardService.updateChart(dashboardId, chartId, user._id, updateDto)
-  }
-  //----------------------------------------------------------------------------------------------------
   //favorite사용하기 위해 추가했습니당 patch이용해서 chartid, dashboardid, userid 받습니다
   @Patch('favorite/:dashboardId')
   async updateChartFavorite(
@@ -62,9 +45,56 @@ export class EsgDashboardController {
     )
   }
   //----------------------------------------------------------------------------------------------------
-  @Patch('batch-update-orders') // 대시보드 ID 랑 Chart ID 로 차트 순서 변경
+  @Patch('batch-update-orders') // 대시보드 ID 랑 Chart ID 로 차트 순서 변경 위젯 순서 변경
   async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
     return this.esgDashboardService.batchUpdateOrders(updates)
   }
   //----------------------------------------------------------------------------------------------------
+
+  // @Get(':dashboardId') // GET 요청 처리 (특정 대시보드 조회)
+  // async getDashboardById(@Param('dashboardId') dashboardId: string, @Req() req: Request) {
+  //   const user = req.user as { _id: string }
+  //   return this.esgDashboardService.findDashboardById(dashboardId, user._id)
+  // }
+  // //----------------------------------------------------------------------------------------------------
+  // @Patch(':dashboardId/charts/:chartId')
+  // async updateChart(
+  //   // 차트 수정
+  //   @Param('dashboardId') dashboardId: string,
+  //   @Param('chartId') chartId: string,
+  //   @Body() updateDto: UpdateEsgChartDto,
+  //   @Req() req: Request,
+  // ) {
+  //   const user = req.user as { _id: string }
+  //   return this.esgDashboardService.updateChart(dashboardId, chartId, user._id, updateDto)
+  // }
+  @Patch('update-chart')
+  async updateChartFromBody(
+    @Body()
+    body: {
+      dashboardId: string
+      chartId: string
+      updateDto: UpdateEsgChartDto
+    },
+    @Req() req: Request,
+  ) {
+    const user = req.user as { _id: string }
+    return this.esgDashboardService.updateChart(
+      body.dashboardId,
+      body.chartId,
+      user._id,
+      body.updateDto,
+    )
+  }
+
+  //----------------------------------------------------------------------------------------------------
+
+  @Patch('load-chart') // 차트 로드
+  async updateChartFormBody(
+    @Body() body: { dashboard: string; chartId: string },
+    @Req() req: Request,
+  ) {
+    const user = req.user as { _id: string }
+    return this.esgDashboardService.loadChart(body.dashboard, body.chartId, user._id)
+  }
 }

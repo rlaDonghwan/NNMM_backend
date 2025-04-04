@@ -7,6 +7,9 @@ import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
 @Injectable()
 export class EsgDashboardService {
+  updateChart(dashboardId: string, chartId: string, _id: string, updateDto: UpdateEsgChartDto) {
+    throw new Error('Method not implemented.')
+  }
   constructor(
     @InjectModel(EsgDashboard.name)
     private readonly esgDashboardModel: Model<EsgDashboardDocument>,
@@ -43,43 +46,6 @@ export class EsgDashboardService {
       dashboardId: dashboard._id,
       category: dashboard.category,
     }))
-  }
-  //----------------------------------------------------------------------------------------------------
-  async findDashboardById(dashboardId: string, userId: string) {
-    const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).lean()
-
-    if (!dashboard) {
-      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
-    }
-
-    return dashboard
-  }
-  //----------------------------------------------------------------------------------------------------
-  async updateChart(
-    dashboardId: string,
-    chartId: string,
-    userId: string,
-    updateDto: UpdateEsgChartDto,
-  ) {
-    const dashboard = await this.esgDashboardModel.findOne({
-      _id: dashboardId,
-      userId,
-    })
-
-    if (!dashboard) {
-      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
-    }
-
-    const chart = dashboard.charts.find((chart) => chart._id.toString() === chartId)
-
-    if (!chart) {
-      throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
-    }
-
-    Object.assign(chart, updateDto)
-
-    await dashboard.save()
-    return chart
   }
   //----------------------------------------------------------------------------------------------------
   async updateChartFavorite(
@@ -141,4 +107,99 @@ export class EsgDashboardService {
     }
   }
   //----------------------------------------------------------------------------------------------------
+
+  // async findDashboardById(dashboardId: string, userId: string) {
+  //   const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).lean()
+
+  //   if (!dashboard) {
+  //     throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
+  //   }
+
+  //   return dashboard
+  // }
+  // //----------------------------------------------------------------------------------------------------
+  // async updateChart(
+  //   dashboardId: string,
+  //   chartId: string,
+  //   userId: string,
+  //   updateDto: UpdateEsgChartDto,
+  // ) {
+  //   const dashboard = await this.esgDashboardModel.findOne({
+  //     _id: dashboardId,
+  //     userId,
+  //   })
+
+  //   if (!dashboard) {
+  //     throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
+  //   }
+
+  //   const chart = dashboard.charts.find((chart) => chart._id.toString() === chartId)
+
+  //   if (!chart) {
+  //     throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
+  //   }
+
+  //   Object.assign(chart, updateDto)
+
+  //   await dashboard.save()
+  //   return chart
+  // }
+  async updateChartByBody(
+    userId: string,
+    body: {
+      dashboardId: string
+      chartId: string
+      updateDto: UpdateEsgChartDto
+    },
+  ) {
+    const { dashboardId, chartId, updateDto } = body
+
+    const dashboard = await this.esgDashboardModel.findOne({
+      _id: dashboardId,
+      userId,
+    })
+
+    if (!dashboard) {
+      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
+    }
+
+    const chart = dashboard.charts.find((chart) => chart._id.toString() === chartId)
+
+    if (!chart) {
+      throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
+    }
+
+    Object.assign(chart, updateDto)
+    await dashboard.save()
+
+    return chart
+  }
+
+  //----------------------------------------------------------------------------------------------------
+
+  async loadChart(dashboardId: string, chartId: string, userId: string) {
+    console.log('[📥 요청 도착]', { dashboardId, chartId, userId })
+
+    const dashboard = await this.esgDashboardModel
+      .findOne({
+        _id: new Types.ObjectId(dashboardId), // ✅ 꼭 ObjectId로 변환
+        userId: new Types.ObjectId(userId),
+        'charts._id': new Types.ObjectId(chartId), // ✅ 이것도!
+      })
+      .lean()
+
+    if (!dashboard) {
+      console.log('[❌ dashboard 못 찾음]')
+      throw new NotFoundException('대시보드를 찾을 수 없습니다.')
+    }
+
+    const chart = dashboard.charts.find((c) => c._id.toString() === chartId)
+    if (!chart) {
+      console.log('[❌ chart 못 찾음]')
+      throw new NotFoundException('차트를 찾을 수 없습니다.')
+    }
+
+    console.log('[✅ chart 찾음]', chart)
+    return chart
+  }
 }
