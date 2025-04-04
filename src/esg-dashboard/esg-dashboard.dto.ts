@@ -44,7 +44,11 @@ export class CreateEsgDashboardDto {
 export class UpdateEsgChartDto {
   @IsOptional() @IsString() title?: string
   @IsOptional() @IsString() unit?: string
+  @IsOptional() @IsString() chartType?: string
+  @IsOptional() @IsNumber() order?: number
+  @IsOptional() isFavorite?: boolean
   @IsOptional() @IsArray() @IsNumber({}, { each: true }) years?: number[]
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => EsgChartFieldDto)
