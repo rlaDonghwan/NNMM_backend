@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { isValidObjectId, Model, Types } from 'mongoose'
-import { EsgDashboard, EsgDashboardDocument, EsgChart } from './esg-dashboard.schema'
+import { EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema'
 import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto'
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
@@ -11,13 +11,11 @@ export class EsgDashboardService {
     @InjectModel(EsgDashboard.name)
     private readonly esgDashboardModel: Model<EsgDashboardDocument>,
   ) {}
-
   //----------------------------------------------------------------------------------------------------
   async create(userId: string, dto: CreateEsgDashboardDto) {
     const created = new this.esgDashboardModel({ userId, ...dto })
     return created.save()
   }
-
   //----------------------------------------------------------------------------------------------------
   async findByUser(userId: string) {
     const dashboards = await this.esgDashboardModel.find({ userId }).lean()
@@ -33,7 +31,6 @@ export class EsgDashboardService {
 
     return flatCharts
   }
-
   //----------------------------------------------------------------------------------------------------
   async findByUserAndCategory(userId: string, category: string) {
     const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
@@ -46,7 +43,6 @@ export class EsgDashboardService {
       category: dashboard.category,
     }))
   }
-
   //----------------------------------------------------------------------------------------------------
   async findDashboardById(dashboardId: string, userId: string) {
     const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).lean()
@@ -57,7 +53,6 @@ export class EsgDashboardService {
 
     return dashboard
   }
-
   //----------------------------------------------------------------------------------------------------
   async updateChart(
     dashboardId: string,
@@ -85,7 +80,6 @@ export class EsgDashboardService {
     await dashboard.save()
     return chart
   }
-
   //----------------------------------------------------------------------------------------------------
   async batchUpdateOrders(updates: UpdateChartOrderBatchDto[]) {
     const results = await Promise.all(

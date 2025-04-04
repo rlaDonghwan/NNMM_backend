@@ -1,4 +1,3 @@
-
 import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common' // NestJS의 데코레이터 및 요청 관련 유틸 가져오기
 import { EsgDashboardService } from './esg-dashboard.service' // ESG 대시보드 서비스 임포트
 import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto' // ESG 대시보드 생성 DTO 임포트
@@ -6,7 +5,6 @@ import { JwtAuthGuard } from '@/auth/jwt/jwt.guard' // JWT 인증 가드 임포�
 import { Request } from 'express' // Express의 Request 타입 임포트
 
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
-
 
 @Controller('esg-dashboard') // 이 컨트롤러는 '/esg-dashboard' 경로에 매핑
 @UseGuards(JwtAuthGuard) // 모든 라우트에 JWT 인증 가드 적용 (로그인한 사용자만 접근 가능)
@@ -53,6 +51,4 @@ export class EsgDashboardController {
   async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
     return this.esgDashboardService.batchUpdateOrders(updates)
   }
-
-
 }
