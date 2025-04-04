@@ -1,3 +1,4 @@
+
 import {
   Body,
   Controller,
@@ -11,64 +12,55 @@ import {
   UseGuards,
   Patch,
 } from '@nestjs/common' // NestJS의 데코레이터 및 요청 관련 유틸 가져오기
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common' // NestJS의 데코레이터 및 요청 관련 유틸 가져오기
 import { EsgDashboardService } from './esg-dashboard.service' // ESG 대시보드 서비스 임포트
-import { CreateEsgDashboardDto } from './esg-dashboard.dto' // ESG 대시보드 생성 DTO 임포트
+import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto' // ESG 대시보드 생성 DTO 임포트
 import { JwtAuthGuard } from '@/auth/jwt/jwt.guard' // JWT 인증 가드 임포트
 import { Request } from 'express' // Express의 Request 타입 임포트
 import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
 import { Types } from 'mongoose'
 
-@Controller('esg-dashboard') // 이 컨트롤러는 '/esg-dashboard' 경로에 매핑됨
+
+import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
+
+@Controller('esg-dashboard') // 이 컨트롤러는 '/esg-dashboard' 경로에 매핑
 @UseGuards(JwtAuthGuard) // 모든 라우트에 JWT 인증 가드 적용 (로그인한 사용자만 접근 가능)
 export class EsgDashboardController {
   constructor(private readonly esgDashboardService: EsgDashboardService) {} // 서비스 의존성 주입
-
+  //----------------------------------------------------------------------------------------------------
   @Post() // POST 요청 처리 (대시보드 생성)
   async create(@Req() req: Request, @Body() dto: CreateEsgDashboardDto) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.create(user._id, dto) // 서비스에 생성 요청
   }
   //----------------------------------------------------------------------------------------------------
-
   @Get() // GET 요청 처리 (해당 사용자의 모든 대시보드 조회)
   async getAllByUser(@Req() req: Request) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.findByUser(user._id) // 사용자 ID로 대시보드 조회
   }
   //----------------------------------------------------------------------------------------------------
-
   @Get('by-category') // GET 요청 처리 (카테고리별 대시보드 조회)
   async getByCategory(@Req() req: Request, @Query('category') category: string) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.findByUserAndCategory(user._id, category) // 사용자 ID와 카테고리로 필터링하여 조회
   }
   //----------------------------------------------------------------------------------------------------
-
-  @Put(':id')
-  @UseGuards(JwtAuthGuard)
-  async updateDashboard(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateEsgDashboardDto,
-    @Req() req: any,
-  ) {
-    return this.esgDashboardService.update(id, req.user.userId, updateDto)
+  @Get(':dashboardId') // GET 요청 처리 (특정 대시보드 조회)
+  async getDashboardById(@Param('dashboardId') dashboardId: string, @Req() req: Request) {
+    const user = req.user as { _id: string }
+    return this.esgDashboardService.findDashboardById(dashboardId, user._id)
   }
   //----------------------------------------------------------------------------------------------------
-
-  @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  async deleteDashboard(@Param('id') id: string, @Req() req: any) {
-    return this.esgDashboardService.delete(id, req.user.userId)
-  }
-  //----------------------------------------------------------------------------------------------------
-
-  @Post('order')
-  async updateChartOrders(
+  @Patch(':dashboardId/charts/:chartId')
+  async updateChart(
+    @Param('dashboardId') dashboardId: string,
+    @Param('chartId') chartId: string,
+    @Body() updateDto: UpdateEsgChartDto,
     @Req() req: Request,
-    @Body('charts') charts: { id: string; order: number }[],
   ) {
     const user = req.user as { _id: string }
-    return this.esgDashboardService.updateChartOrders(user._id, charts)
+    return this.esgDashboardService.updateChart(dashboardId, chartId, user._id, updateDto)
   }
   //----------------------------------------------------------------------------------------------------
   //favorite사용하기 위해 추가했습니당 patch이용해서 chartid, dashboardid, userid 받습니다
@@ -84,5 +76,9 @@ export class EsgDashboardController {
       body.userId,
       body.isFavorite,
     )
+  }
+  @Patch('batch-update-orders') // 대시보드 ID 랑 Chart ID 로 차트 순서 변경
+  async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
+    return this.esgDashboardService.batchUpdateOrders(updates)
   }
 }
