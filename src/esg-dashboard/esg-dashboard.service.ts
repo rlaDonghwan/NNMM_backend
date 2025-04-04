@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
 import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위한 데코레이터 임포트
+import { Model } from 'mongoose' // Mongoose의 Model 타입 임포트
+import { EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
+import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
 import { isValidObjectId, Model, Types } from 'mongoose' // Mongoose의 Model 타입 임포트
 import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
 import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
+
 
 @Injectable() // 서비스 클래스로 선언 (의존성 주입 가능)
 export class EsgDashboardService {
@@ -11,7 +15,7 @@ export class EsgDashboardService {
     @InjectModel(EsgDashboard.name) // EsgDashboard 모델을 주입
     private readonly esgDashboardModel: Model<EsgDashboardDocument>, // Mongoose 모델 타입으로 선언
   ) {}
-
+  //----------------------------------------------------------------------------------------------------
   async create(userId: string, dto: CreateEsgDashboardDto) {
     // 새 ESG 대시보드 생성 (userId와 DTO 값 포함)
     const created = new this.esgDashboardModel({
@@ -21,7 +25,6 @@ export class EsgDashboardService {
     return created.save() // MongoDB에 저장
   }
   //----------------------------------------------------------------------------------------------------
-
   async findByUser(userId: string) {
     // 해당 사용자(userId)의 모든 대시보드 조회 (lean()으로 plain object로 반환)
     const dashboards = await this.esgDashboardModel.find({ userId }).lean()
@@ -39,8 +42,53 @@ export class EsgDashboardService {
     return flatCharts // 펼쳐진 차트 목록 반환
   }
   //----------------------------------------------------------------------------------------------------
+async findByUserAndCategory(userId: string, category: string) {
+    const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
 
-  async findByUserAndCategory(userId: string, category: string) {
+    if (!dashboard) return []
+
+    const chartsWithDashboardId = dashboard.charts.map((chart) => ({
+      ...chart,
+      dashboardId: dashboard._id,
+      category: dashboard.category,
+    }))
+
+    return chartsWithDashboardId
+  }
+  //----------------------------------------------------------------------------------------------------
+  async findDashboardById(dashboardId: string, userId: string) {
+    const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).lean()
+    if (!dashboard) {
+      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
+    }
+    return dashboard
+  }
+  //----------------------------------------------------------------------------------------------------
+  // 특정 차트 수정
+  async updateChart(
+    dashboardId: string,
+    chartId: string,
+    userId: string,
+    updateDto: UpdateEsgChartDto,
+  ) {
+    const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).exec()
+
+    if (!dashboard) {
+      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
+    }
+
+    const chart = dashboard.charts.find((chart) => chart._id.toString() === chartId)
+    if (!chart) {
+      throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
+    }
+
+    // 업데이트 적용
+    Object.assign(chart, updateDto)
+
+    await dashboard.save()
+    return chart
+  }
+
     const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
 
     if (!dashboard) return []
@@ -89,4 +137,5 @@ export class EsgDashboardService {
   }
 
   //----------------------------------------------------------------------------------------------------
+
 }

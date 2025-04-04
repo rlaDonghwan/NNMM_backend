@@ -30,6 +30,7 @@ export class AuthController {
   @Get('text-token')
   getTestToken(): { accessToken: string } {
     const payload = {
+
       sub: '67e245761c6463a49d5ac899',
       email: 'kdhe@naver.com',
       name: '김동환',
