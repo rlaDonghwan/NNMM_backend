@@ -71,29 +71,13 @@ export class EsgDashboardController {
     return this.esgDashboardService.updateChartOrders(user._id, charts)
   }
   //----------------------------------------------------------------------------------------------------
-  // @Patch('favorite/:dashboardId')
-  // async updateChartFavorite(
-  //   @Param('dashboardId') dashboardId: string,
-  //   @Body() body: { chartId: string; isFavorite: boolean },
-  //   @Req() req: any,
-  // ) {
-  //   const userId = req.user?._id
-  //   return this.esgDashboardService.updateChartFavorite(
-  //     dashboardId,
-  //     body.chartId,
-  //     userId,
-  //     body.isFavorite,
-  //   )
-  // }
+  //favorite사용하기 위해 추가했습니당 patch이용해서 chartid, dashboardid, userid 받습니다
   @Patch('favorite/:dashboardId')
   async updateChartFavorite(
     @Param('dashboardId') dashboardId: string,
     @Body() body: { chartId: string; isFavorite: boolean; userId: string },
   ) {
-    console.log('[debug] body:', body)
-    console.log('[debug] dashboardId:', dashboardId)
-    console.log('[debug] userId:', body.userId)
-    const userId = body.userId // ✅ 바디에서 직접 받음
+    const userId = body.userId 
     return this.esgDashboardService.updateChartFavorite(
       dashboardId,
       body.chartId,

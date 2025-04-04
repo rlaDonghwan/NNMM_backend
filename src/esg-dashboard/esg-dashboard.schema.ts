@@ -23,7 +23,7 @@ export class EsgChart {
   @Prop({ required: true }) unit: string
   @Prop({ type: [Number], required: true }) years: number[]
   @Prop({ type: [EsgChartField], required: true }) fields: EsgChartField[]
-  @Prop({ default: false }) isFavorite: boolean
+  @Prop({ default: false }) isFavorite: boolean // Favorite기능 때문에 추가 했어용
 }
 
 @Schema({ timestamps: true })
