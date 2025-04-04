@@ -51,23 +51,16 @@ export class EsgDashboardController {
   }
   //----------------------------------------------------------------------------------------------------
 
-  // @Get(':dashboardId') // GET 요청 처리 (특정 대시보드 조회)
-  // async getDashboardById(@Param('dashboardId') dashboardId: string, @Req() req: Request) {
-  //   const user = req.user as { _id: string }
-  //   return this.esgDashboardService.findDashboardById(dashboardId, user._id)
-  // }
-  // //----------------------------------------------------------------------------------------------------
-  // @Patch(':dashboardId/charts/:chartId')
-  // async updateChart(
-  //   // 차트 수정
-  //   @Param('dashboardId') dashboardId: string,
-  //   @Param('chartId') chartId: string,
-  //   @Body() updateDto: UpdateEsgChartDto,
-  //   @Req() req: Request,
-  // ) {
-  //   const user = req.user as { _id: string }
-  //   return this.esgDashboardService.updateChart(dashboardId, chartId, user._id, updateDto)
-  // }
+  @Patch('load-chart') // 차트 로드
+  async updateChartFormBody(
+    @Body() body: { dashboard: string; chartId: string },
+    @Req() req: Request,
+  ) {
+    const user = req.user as { _id: string }
+    return this.esgDashboardService.loadChart(body.dashboard, body.chartId, user._id)
+  }
+  //----------------------------------------------------------------------------------------------------
+
   @Patch('update-chart')
   async updateChartFromBody(
     @Body()
@@ -89,12 +82,17 @@ export class EsgDashboardController {
 
   //----------------------------------------------------------------------------------------------------
 
-  @Patch('load-chart') // 차트 로드
-  async updateChartFormBody(
-    @Body() body: { dashboard: string; chartId: string },
+  @Patch('delete-chart')
+  async deleteChart(
+    @Body()
+    body: {
+      dashboardId: string
+      chartId: string
+    },
     @Req() req: Request,
   ) {
     const user = req.user as { _id: string }
-    return this.esgDashboardService.loadChart(body.dashboard, body.chartId, user._id)
+    return this.esgDashboardService.deleteChart(body.dashboardId, body.chartId, user._id)
   }
+  //
 }

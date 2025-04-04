@@ -7,19 +7,18 @@ import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
 @Injectable()
 export class EsgDashboardService {
-  updateChart(dashboardId: string, chartId: string, _id: string, updateDto: UpdateEsgChartDto) {
-    throw new Error('Method not implemented.')
-  }
   constructor(
     @InjectModel(EsgDashboard.name)
     private readonly esgDashboardModel: Model<EsgDashboardDocument>,
   ) {}
   //----------------------------------------------------------------------------------------------------
+  // 대시보드 생성
   async create(userId: string, dto: CreateEsgDashboardDto) {
     const created = new this.esgDashboardModel({ userId, ...dto })
     return created.save()
   }
   //----------------------------------------------------------------------------------------------------
+  // 대시보드 조회
   async findByUser(userId: string) {
     const dashboards = await this.esgDashboardModel.find({ userId }).lean()
 
@@ -36,6 +35,7 @@ export class EsgDashboardService {
     return flatCharts
   }
   //----------------------------------------------------------------------------------------------------
+  // 카테고리별 대시보드 조회
   async findByUserAndCategory(userId: string, category: string) {
     const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
 
@@ -48,6 +48,7 @@ export class EsgDashboardService {
     }))
   }
   //----------------------------------------------------------------------------------------------------
+  // 대시보드에 차트 즐겨찾기 업데이트
   async updateChartFavorite(
     dashboardId: string,
     chartId: string,
@@ -75,6 +76,8 @@ export class EsgDashboardService {
     return { success: true, chartId, isFavorite }
   }
   //----------------------------------------------------------------------------------------------------
+  // 대시보드에 차트 순서 일괄 업데이트
+  // 대시보드 ID 랑 Chart ID 로 차트 순서 변경 위젯 순서 변경
   async batchUpdateOrders(updates: UpdateChartOrderBatchDto[]) {
     const results = await Promise.all(
       updates.map(({ dashboardId, chartId, newOrder }) => {
@@ -107,76 +110,7 @@ export class EsgDashboardService {
     }
   }
   //----------------------------------------------------------------------------------------------------
-
-  // async findDashboardById(dashboardId: string, userId: string) {
-  //   const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).lean()
-
-  //   if (!dashboard) {
-  //     throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
-  //   }
-
-  //   return dashboard
-  // }
-  // //----------------------------------------------------------------------------------------------------
-  // async updateChart(
-  //   dashboardId: string,
-  //   chartId: string,
-  //   userId: string,
-  //   updateDto: UpdateEsgChartDto,
-  // ) {
-  //   const dashboard = await this.esgDashboardModel.findOne({
-  //     _id: dashboardId,
-  //     userId,
-  //   })
-
-  //   if (!dashboard) {
-  //     throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
-  //   }
-
-  //   const chart = dashboard.charts.find((chart) => chart._id.toString() === chartId)
-
-  //   if (!chart) {
-  //     throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
-  //   }
-
-  //   Object.assign(chart, updateDto)
-
-  //   await dashboard.save()
-  //   return chart
-  // }
-  async updateChartByBody(
-    userId: string,
-    body: {
-      dashboardId: string
-      chartId: string
-      updateDto: UpdateEsgChartDto
-    },
-  ) {
-    const { dashboardId, chartId, updateDto } = body
-
-    const dashboard = await this.esgDashboardModel.findOne({
-      _id: dashboardId,
-      userId,
-    })
-
-    if (!dashboard) {
-      throw new NotFoundException('해당 대시보드를 찾을 수 없습니다.')
-    }
-
-    const chart = dashboard.charts.find((chart) => chart._id.toString() === chartId)
-
-    if (!chart) {
-      throw new NotFoundException('해당 차트를 찾을 수 없습니다.')
-    }
-
-    Object.assign(chart, updateDto)
-    await dashboard.save()
-
-    return chart
-  }
-
-  //----------------------------------------------------------------------------------------------------
-
+  // 차트 프론트 불러오기
   async loadChart(dashboardId: string, chartId: string, userId: string) {
     console.log('[📥 요청 도착]', { dashboardId, chartId, userId })
 
@@ -202,4 +136,53 @@ export class EsgDashboardService {
     console.log('[✅ chart 찾음]', chart)
     return chart
   }
+  //----------------------------------------------------------------------------------------------------
+  // 대시보드에 차트 수정
+  async updateChart(
+    dashboardId: string,
+    chartId: string,
+    userId: string,
+    updateDto: UpdateEsgChartDto,
+  ) {
+    const dashboard = await this.esgDashboardModel.findOne({
+      _id: dashboardId,
+      userId,
+    })
+
+    if (!dashboard) {
+      throw new NotFoundException('대시보드를 찾을 수 없습니다.')
+    }
+
+    const chart = dashboard.charts.find((c) => c._id.toString() === chartId)
+    if (!chart) {
+      throw new NotFoundException('차트를 찾을 수 없습니다.')
+    }
+
+    Object.assign(chart, updateDto) // DTO 값을 chart에 덮어쓰기
+    await dashboard.save()
+
+    return chart
+  }
+
+  //----------------------------------------------------------------------------------------------------
+
+  // 대시보드에서 차트 삭제
+  async deleteChart(dashboardId: string, chartId: string, userId: string) {
+    const dashboard = await this.esgDashboardModel.findOne({
+      _id: dashboardId,
+      userId: userId,
+    })
+
+    if (!dashboard) {
+      throw new NotFoundException('대시보드를 찾을 수 없습니다.')
+    }
+
+    dashboard.charts = dashboard.charts.filter(
+      (chart) => chart._id.toString() !== chartId.toString(),
+    )
+
+    await dashboard.save()
+    return { message: '차트 삭제 성공', chartId }
+  }
+  //----------------------------------------------------------------------------------------------------
 }
