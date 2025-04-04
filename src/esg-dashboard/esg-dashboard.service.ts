@@ -30,6 +30,7 @@ export class EsgDashboardService {
     // charts 배열을 펼쳐서(flatMap) 각 chart에 상위 속성(_id, category) 추가
     const flatCharts = dashboards.flatMap((d) => {
       return d.charts.map((chart) => ({
+        ...chart,
         chartId: chart._id,
         dashboardId: d._id,
         userId: d.userId,
