@@ -1,13 +1,9 @@
-
-import { Injectable, NotFoundException } from '@nestjs/common' // 의존성 주입을 위한 Injectable 데코레이터 임포트
-import { InjectModel } from '@nestjs/mongoose' // Mongoose 모델 주입을 위한 데코레이터 임포트
-import { Model } from 'mongoose' // Mongoose의 Model 타입 임포트
-import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema' // ESG 대시보드 스키마 및 타입 임포트
-import { CreateEsgDashboardDto } from './esg-dashboard.dto' // 대시보드 생성 DTO 임포트
-import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
-import { Types } from 'mongoose'
-import { isValidObjectId, Model, Types } from 'mongoose'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model, Types, isValidObjectId } from 'mongoose'
+import { EsgChart, EsgDashboard, EsgDashboardDocument } from './esg-dashboard.schema'
 import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto'
+import { UpdateEsgDashboardDto } from './update-esg-dashboard.dto'
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
 @Injectable()
@@ -16,11 +12,13 @@ export class EsgDashboardService {
     @InjectModel(EsgDashboard.name)
     private readonly esgDashboardModel: Model<EsgDashboardDocument>,
   ) {}
+
   //----------------------------------------------------------------------------------------------------
   async create(userId: string, dto: CreateEsgDashboardDto) {
     const created = new this.esgDashboardModel({ userId, ...dto })
     return created.save()
   }
+
   //----------------------------------------------------------------------------------------------------
   async findByUser(userId: string) {
     const dashboards = await this.esgDashboardModel.find({ userId }).lean()
@@ -32,14 +30,12 @@ export class EsgDashboardService {
         dashboardId: d._id,
         userId: d.userId,
         category: d.category,
-      }))
-    })
-        category: d.category,
       })),
     )
 
     return flatCharts
   }
+
   //----------------------------------------------------------------------------------------------------
   async findByUserAndCategory(userId: string, category: string) {
     const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
@@ -52,6 +48,7 @@ export class EsgDashboardService {
       category: dashboard.category,
     }))
   }
+
   //----------------------------------------------------------------------------------------------------
   async findDashboardById(dashboardId: string, userId: string) {
     const dashboard = await this.esgDashboardModel.findOne({ _id: dashboardId, userId }).lean()
@@ -62,6 +59,7 @@ export class EsgDashboardService {
 
     return dashboard
   }
+
   //----------------------------------------------------------------------------------------------------
   async updateChart(
     dashboardId: string,
@@ -89,8 +87,8 @@ export class EsgDashboardService {
     await dashboard.save()
     return chart
   }
-  //----------------------------------------------------------------------------------------------------
 
+  //----------------------------------------------------------------------------------------------------
   async updateChartFavorite(
     dashboardId: string,
     chartId: string,
@@ -116,7 +114,9 @@ export class EsgDashboardService {
     await dashboard.save()
 
     return { success: true, chartId, isFavorite }
+  }
 
+  //----------------------------------------------------------------------------------------------------
   async batchUpdateOrders(updates: UpdateChartOrderBatchDto[]) {
     const results = await Promise.all(
       updates.map(({ dashboardId, chartId, newOrder }) => {

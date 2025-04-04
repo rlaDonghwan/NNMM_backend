@@ -1,25 +1,10 @@
-
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  Req,
-  UseGuards,
-  Patch,
-} from '@nestjs/common' // NestJS의 데코레이터 및 요청 관련 유틸 가져오기
 import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common' // NestJS의 데코레이터 및 요청 관련 유틸 가져오기
 import { EsgDashboardService } from './esg-dashboard.service' // ESG 대시보드 서비스 임포트
 import { CreateEsgDashboardDto, UpdateEsgChartDto } from './esg-dashboard.dto' // ESG 대시보드 생성 DTO 임포트
 import { JwtAuthGuard } from '@/auth/jwt/jwt.guard' // JWT 인증 가드 임포트
 import { Request } from 'express' // Express의 Request 타입 임포트
-import { UpdateEsgDashboardDto } from './UpdateEsgDashboard.dto' // 대시보드 업데이트 DTO 임포트
+import { UpdateEsgDashboardDto } from './update-esg-dashboard.dto' // 대시보드 업데이트 DTO 임포트
 import { Types } from 'mongoose'
-
 
 import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 
@@ -69,7 +54,7 @@ export class EsgDashboardController {
     @Param('dashboardId') dashboardId: string,
     @Body() body: { chartId: string; isFavorite: boolean; userId: string },
   ) {
-    const userId = body.userId 
+    const userId = body.userId
     return this.esgDashboardService.updateChartFavorite(
       dashboardId,
       body.chartId,
