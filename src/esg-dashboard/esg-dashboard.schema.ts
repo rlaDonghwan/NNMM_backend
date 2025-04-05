@@ -11,6 +11,7 @@ export class EsgChartField {
   @Prop() field2?: string
   @Prop() color?: string
   @Prop({ type: Object, required: true }) data: Record<number, number>
+  @Prop() unit?: string
 }
 
 @Schema({ _id: true })
@@ -30,7 +31,6 @@ export class EsgChart {
   @Prop({ default: false }) isFavorite: boolean // Favorite기능 때문에 추가 했어용
 
   category: any
-
 }
 
 @Schema({ timestamps: true })

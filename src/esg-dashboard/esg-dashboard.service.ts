@@ -185,4 +185,32 @@ export class EsgDashboardService {
     return { message: '차트 삭제 성공', chartId }
   }
   //----------------------------------------------------------------------------------------------------
+  // 카테고리별 필드(indicatorKey, label, unit 등) 추출
+  async getIndicatorsFromDashboard(userId: string, category: string) {
+    const dashboards = await this.esgDashboardModel.find({ userId, category })
+
+    const indicators = dashboards.flatMap((d) =>
+      d.charts.flatMap((chart) =>
+        chart.fields.map((field) => ({
+          indicatorKey: field.key,
+          label: field.label,
+          unit: field.unit ?? '',
+        })),
+      ),
+    )
+
+    // 중복 제거
+    const unique = Object.values(
+      indicators.reduce(
+        (acc, cur) => {
+          if (!acc[cur.indicatorKey]) acc[cur.indicatorKey] = cur
+          return acc
+        },
+        {} as Record<string, (typeof indicators)[number]>,
+      ),
+    )
+
+    return unique
+  }
+  //----------------------------------------------------------------------------------------------------
 }

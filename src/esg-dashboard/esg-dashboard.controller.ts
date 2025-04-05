@@ -45,13 +45,14 @@ export class EsgDashboardController {
     )
   }
   //----------------------------------------------------------------------------------------------------
-  @Patch('batch-update-orders') // 대시보드 ID 랑 Chart ID 로 차트 순서 변경 위젯 순서 변경
+  // 대시보드 ID 랑 Chart ID 로 차트 순서 변경 위젯 순서 변경
+  @Patch('batch-update-orders')
   async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
     return this.esgDashboardService.batchUpdateOrders(updates)
   }
   //----------------------------------------------------------------------------------------------------
-
-  @Patch('load-chart') // 차트 로드
+  // 차트 로드
+  @Patch('load-chart')
   async updateChartFormBody(
     @Body() body: { dashboard: string; chartId: string },
     @Req() req: Request,
@@ -60,7 +61,7 @@ export class EsgDashboardController {
     return this.esgDashboardService.loadChart(body.dashboard, body.chartId, user._id)
   }
   //----------------------------------------------------------------------------------------------------
-
+  // 대시보드 ID 랑 Chart ID 로 차트 업데이트
   @Patch('update-chart')
   async updateChartFromBody(
     @Body()
@@ -79,9 +80,8 @@ export class EsgDashboardController {
       body.updateDto,
     )
   }
-
   //----------------------------------------------------------------------------------------------------
-
+  // 대시보드 ID 랑 Chart ID 로 차트 삭제
   @Patch('delete-chart')
   async deleteChart(
     @Body()
@@ -94,5 +94,11 @@ export class EsgDashboardController {
     const user = req.user as { _id: string }
     return this.esgDashboardService.deleteChart(body.dashboardId, body.chartId, user._id)
   }
-  //
+  //------------------------------------------------------------------------------------------------------
+  // 카테고리별 대시보드에서 지표만 불러오기
+  @Get('indicators/:category')
+  getIndicators(@Req() req: Request, @Param('category') category: string) {
+    const user = req.user as { _id: string }
+    return this.esgDashboardService.getIndicatorsFromDashboard(user._id, category)
+  }
 }
