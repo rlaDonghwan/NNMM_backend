@@ -10,6 +10,7 @@ export class EsgGoalService {
     @InjectModel(EsgGoal.name)
     private readonly esgGoalModel: Model<EsgGoal>,
   ) {}
+  //----------------------------------------------------------------------------------------------------
 
   async createGoal(dto: CreateEsgGoalDto & { userId: string }) {
     const results: { indicatorKey: string; year: number; status: string }[] = []
@@ -28,7 +29,7 @@ export class EsgGoalService {
           {
             $set: {
               targetValue: goal.targetValue,
-              currentValue: goal.currentValue, // ✅ 현재 사용량 업데이트
+              currentValue: goal.currentValue,
               unit: goal.unit,
             },
           },
@@ -50,14 +51,17 @@ export class EsgGoalService {
       results,
     }
   }
+  //----------------------------------------------------------------------------------------------------
 
-  // ✅ 카테고리 + 연도 기준으로 목표 조회
+  // 카테고리 + 연도 기준으로 목표 조회
   async getGoalsByCategory(userId: string, category: string, year: number) {
     return this.esgGoalModel.find({ userId, category, year })
   }
+  //----------------------------------------------------------------------------------------------------
 
-  // ✅ 연도까지 포함해서 단일 목표 삭제
+  // 연도까지 포함해서 단일 목표 삭제
   async deleteGoal(userId: string, indicatorKey: string, category: string, year: number) {
     return this.esgGoalModel.deleteOne({ userId, indicatorKey, category, year })
   }
+  //----------------------------------------------------------------------------------------------------
 }

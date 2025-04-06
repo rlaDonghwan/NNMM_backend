@@ -12,14 +12,16 @@ export class EsgGoalController {
   createGoal(@Body() dto: CreateEsgGoalDto, @Req() req) {
     return this.esgGoalService.createGoal({ ...dto, userId: req.user.id })
   }
+  //----------------------------------------------------------------------------------------------------
 
-  // ✅ category + year 기준으로 목표값 조회
+  // category + year 기준으로 목표값 조회
   @Get(':category')
   getGoalsByCategory(@Param('category') category: string, @Query('year') year: string, @Req() req) {
     return this.esgGoalService.getGoalsByCategory(req.user.id, category, Number(year))
   }
+  //----------------------------------------------------------------------------------------------------
 
-  // ✅ category + indicatorKey + year 기준으로 삭제
+  // category + indicatorKey + year 기준으로 삭제
   @Delete(':indicatorKey/:category')
   removeGoal(
     @Param('indicatorKey') indicatorKey: string,
@@ -29,4 +31,5 @@ export class EsgGoalController {
   ) {
     return this.esgGoalService.deleteGoal(req.user.id, indicatorKey, category, Number(year))
   }
+  //----------------------------------------------------------------------------------------------------
 }
