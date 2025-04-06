@@ -17,6 +17,9 @@ export class EsgGoal extends Document {
 
   @Prop()
   unit: string
+
+  @Prop({ required: true }) // ➕ 목표 연도 필수
+  year: number
 }
 
 export const EsgGoalSchema = SchemaFactory.createForClass(EsgGoal)

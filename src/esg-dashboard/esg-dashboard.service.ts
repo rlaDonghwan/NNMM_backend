@@ -213,4 +213,27 @@ export class EsgDashboardService {
     return unique
   }
   //----------------------------------------------------------------------------------------------------
+
+  async getIndicatorsWithPreviousYearData(userId: string, category: string, year: number) {
+    const dashboards = await this.esgDashboardModel.find({ userId, category })
+    const prevYear = year - 1
+
+    const indicators = new Map<string, { key: string; label: string; unit: string }>()
+
+    dashboards.forEach((dashboard) => {
+      dashboard.charts.forEach((chart) => {
+        chart.fields.forEach((field) => {
+          if (field.data?.[prevYear]) {
+            indicators.set(field.key, {
+              key: field.key,
+              label: field.label,
+              unit: chart.unit ?? field.unit ?? '',
+            })
+          }
+        })
+      })
+    })
+
+    return Array.from(indicators.values())
+  }
 }

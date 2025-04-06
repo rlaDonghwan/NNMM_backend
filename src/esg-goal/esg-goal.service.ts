@@ -6,28 +6,57 @@ import { CreateEsgGoalDto } from './CreateOrUpdateGoalDto'
 
 @Injectable()
 export class EsgGoalService {
-  constructor(@InjectModel(EsgGoal.name) private readonly esgGoalModel: Model<EsgGoal>) {}
+  constructor(
+    @InjectModel(EsgGoal.name)
+    private readonly esgGoalModel: Model<EsgGoal>,
+  ) {}
 
   async createGoal(dto: CreateEsgGoalDto & { userId: string }) {
-    const exists = await this.esgGoalModel.findOne({
-      userId: dto.userId,
-      indicatorKey: dto.indicatorKey,
-      category: dto.category,
-    })
+    const results: { indicatorKey: string; status: string }[] = []
 
-    if (exists) {
-      await this.esgGoalModel.updateOne(
-        { _id: exists._id },
-        { $set: { targetValue: dto.targetValue, unit: dto.unit } },
-      )
-      return { message: '기존 목표를 업데이트했습니다.' }
+    for (const goal of dto.goals) {
+      const exists = await this.esgGoalModel.findOne({
+        userId: dto.userId,
+        indicatorKey: goal.indicatorKey,
+        category: dto.category,
+      })
+
+      if (exists) {
+        await this.esgGoalModel.updateOne(
+          { _id: exists._id },
+          {
+            $set: {
+              targetValue: goal.targetValue,
+              unit: goal.unit,
+            },
+          },
+        )
+        results.push({ indicatorKey: goal.indicatorKey, status: 'updated' })
+      } else {
+        const created = new this.esgGoalModel({
+          ...goal,
+          category: dto.category,
+          userId: dto.userId,
+        })
+        await created.save()
+        results.push({ indicatorKey: goal.indicatorKey, status: 'created' })
+      }
     }
 
-    const created = new this.esgGoalModel(dto)
-    return created.save()
+    return {
+      message: '목표값 저장 완료',
+      results,
+    }
   }
+  //----------------------------------------------------------------------------------------------------
 
   async getGoalsByCategory(userId: string, category: string) {
     return this.esgGoalModel.find({ userId, category })
   }
+  //----------------------------------------------------------------------------------------------------
+
+  async deleteGoal(userId: string, indicatorKey: string, category: string) {
+    return this.esgGoalModel.deleteOne({ userId, indicatorKey, category })
+  }
+  //----------------------------------------------------------------------------------------------------
 }

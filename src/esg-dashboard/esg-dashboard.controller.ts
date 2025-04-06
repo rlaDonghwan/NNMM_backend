@@ -12,24 +12,31 @@ import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 export class EsgDashboardController {
   constructor(private readonly esgDashboardService: EsgDashboardService) {} // 서비스 의존성 주입
   //----------------------------------------------------------------------------------------------------
-  @Post() // POST 요청 처리 (대시보드 생성)
+
+  // POST 요청 처리 (대시보드 생성)
+  @Post()
   async create(@Req() req: Request, @Body() dto: CreateEsgDashboardDto) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.create(user._id, dto) // 서비스에 생성 요청
   }
   //----------------------------------------------------------------------------------------------------
-  @Get() // GET 요청 처리 (해당 사용자의 모든 대시보드 조회)
+
+  // GET 요청 처리 (해당 사용자의 모든 대시보드 조회)
+  @Get()
   async getAllByUser(@Req() req: Request) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.findByUser(user._id) // 사용자 ID로 대시보드 조회
   }
   //----------------------------------------------------------------------------------------------------
-  @Get('by-category') // GET 요청 처리 (카테고리별 대시보드 조회)
+
+  // GET 요청 처리 (카테고리별 대시보드 조회)
+  @Get('by-category')
   async getByCategory(@Req() req: Request, @Query('category') category: string) {
     const user = req.user as { _id: string } // 요청에서 사용자 ID 추출
     return this.esgDashboardService.findByUserAndCategory(user._id, category) // 사용자 ID와 카테고리로 필터링하여 조회
   }
   //----------------------------------------------------------------------------------------------------
+
   //favorite사용하기 위해 추가했습니당 patch이용해서 chartid, dashboardid, userid 받습니다
   @Patch('favorite/:dashboardId')
   async updateChartFavorite(
@@ -45,12 +52,14 @@ export class EsgDashboardController {
     )
   }
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드 ID 랑 Chart ID 로 차트 순서 변경 위젯 순서 변경
   @Patch('batch-update-orders')
   async batchUpdateOrders(@Body() updates: UpdateChartOrderBatchDto[]) {
     return this.esgDashboardService.batchUpdateOrders(updates)
   }
   //----------------------------------------------------------------------------------------------------
+
   // 차트 로드
   @Patch('load-chart')
   async updateChartFormBody(
@@ -61,6 +70,7 @@ export class EsgDashboardController {
     return this.esgDashboardService.loadChart(body.dashboard, body.chartId, user._id)
   }
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드 ID 랑 Chart ID 로 차트 업데이트
   @Patch('update-chart')
   async updateChartFromBody(
@@ -81,6 +91,7 @@ export class EsgDashboardController {
     )
   }
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드 ID 랑 Chart ID 로 차트 삭제
   @Patch('delete-chart')
   async deleteChart(
@@ -95,10 +106,26 @@ export class EsgDashboardController {
     return this.esgDashboardService.deleteChart(body.dashboardId, body.chartId, user._id)
   }
   //------------------------------------------------------------------------------------------------------
+
   // 카테고리별 대시보드에서 지표만 불러오기
   @Get('indicators/:category')
   getIndicators(@Req() req: Request, @Param('category') category: string) {
     const user = req.user as { _id: string }
     return this.esgDashboardService.getIndicatorsFromDashboard(user._id, category)
   }
+  //----------------------------------------------------------------------------------------------------
+
+  // @Get('indicators/:category/previous-year')
+  // getIndicatorsWithPrevYearData(
+  //   @Req() req: Request,
+  //   @Param('category') category: string,
+  //   @Query('year') year: string,
+  // ) {
+  //   const user = req.user as { _id: string }
+  //   return this.esgDashboardService.getIndicatorsWithPreviousYearData(
+  //     user._id,
+  //     category,
+  //     Number(year),
+  //   )
+  // }
 }

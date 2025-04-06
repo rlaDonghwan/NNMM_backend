@@ -1,10 +1,7 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { IsArray, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
 
-export class CreateEsgGoalDto {
-  @IsString()
-  @IsNotEmpty()
-  category: 'environmental' | 'social' | 'governance'
-
+export class GoalItemDto {
   @IsString()
   @IsNotEmpty()
   indicatorKey: string
@@ -14,4 +11,18 @@ export class CreateEsgGoalDto {
 
   @IsString()
   unit: string
+
+  @IsNumber() // ➕ 연도 추가
+  year: number
+}
+
+export class CreateEsgGoalDto {
+  @IsString()
+  @IsNotEmpty()
+  category: 'environmental' | 'social' | 'governance'
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GoalItemDto)
+  goals: GoalItemDto[]
 }
