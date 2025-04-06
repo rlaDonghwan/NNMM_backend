@@ -5,10 +5,9 @@ import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { DatabaseModule } from './database/database.module'
-import { ChartConfigModule } from '@/chart-config/chart-config.module'
 import { IndicatorModule } from './indicator/indicator.module'
-import { EsgReportModule } from './esg-report/esg-report.module'
 import { EsgDashboardModule } from './esg-dashboard/esg-dashboard.module'
+import { EsgGoalModule } from './esg-goal/esg-goal.module'
 
 @Module({
   imports: [
@@ -18,10 +17,9 @@ import { EsgDashboardModule } from './esg-dashboard/esg-dashboard.module'
     AuthModule,
     UsersModule,
     DatabaseModule,
-    ChartConfigModule,
     IndicatorModule,
-    EsgReportModule,
     EsgDashboardModule,
+    EsgGoalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

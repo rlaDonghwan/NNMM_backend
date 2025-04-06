@@ -12,12 +12,14 @@ export class EsgDashboardService {
     private readonly esgDashboardModel: Model<EsgDashboardDocument>,
   ) {}
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드 생성
   async create(userId: string, dto: CreateEsgDashboardDto) {
     const created = new this.esgDashboardModel({ userId, ...dto })
     return created.save()
   }
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드 조회
   async findByUser(userId: string) {
     const dashboards = await this.esgDashboardModel.find({ userId }).lean()
@@ -35,6 +37,7 @@ export class EsgDashboardService {
     return flatCharts
   }
   //----------------------------------------------------------------------------------------------------
+
   // 카테고리별 대시보드 조회
   async findByUserAndCategory(userId: string, category: string) {
     const dashboard = await this.esgDashboardModel.findOne({ userId, category }).lean()
@@ -48,6 +51,7 @@ export class EsgDashboardService {
     }))
   }
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드에 차트 즐겨찾기 업데이트
   async updateChartFavorite(
     dashboardId: string,
@@ -76,6 +80,7 @@ export class EsgDashboardService {
     return { success: true, chartId, isFavorite }
   }
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드에 차트 순서 일괄 업데이트
   // 대시보드 ID 랑 Chart ID 로 차트 순서 변경 위젯 순서 변경
   async batchUpdateOrders(updates: UpdateChartOrderBatchDto[]) {
@@ -110,15 +115,16 @@ export class EsgDashboardService {
     }
   }
   //----------------------------------------------------------------------------------------------------
+
   // 차트 프론트 불러오기
   async loadChart(dashboardId: string, chartId: string, userId: string) {
     console.log('[📥 요청 도착]', { dashboardId, chartId, userId })
 
     const dashboard = await this.esgDashboardModel
       .findOne({
-        _id: new Types.ObjectId(dashboardId), // ✅ 꼭 ObjectId로 변환
+        _id: new Types.ObjectId(dashboardId),
         userId: new Types.ObjectId(userId),
-        'charts._id': new Types.ObjectId(chartId), // ✅ 이것도!
+        'charts._id': new Types.ObjectId(chartId),
       })
       .lean()
 
@@ -137,6 +143,7 @@ export class EsgDashboardService {
     return chart
   }
   //----------------------------------------------------------------------------------------------------
+
   // 대시보드에 차트 수정
   async updateChart(
     dashboardId: string,
@@ -183,6 +190,35 @@ export class EsgDashboardService {
 
     await dashboard.save()
     return { message: '차트 삭제 성공', chartId }
+  }
+  //----------------------------------------------------------------------------------------------------
+
+  async getIndicatorsWithPreviousYearData(userId: string, category: string, year: number) {
+    const dashboards = await this.esgDashboardModel.find({ userId, category })
+    const prevYear = year - 1
+
+    const indicators = new Map<
+      string,
+      { key: string; label: string; unit: string; prevValue: number }
+    >()
+
+    dashboards.forEach((dashboard) => {
+      dashboard.charts.forEach((chart) => {
+        chart.fields.forEach((field) => {
+          const prevValue = field.data?.[prevYear]
+          if (prevValue !== undefined) {
+            indicators.set(field.key, {
+              key: field.key,
+              label: field.label,
+              unit: chart.unit ?? field.unit ?? '',
+              prevValue, // ✅ 여기 추가!
+            })
+          }
+        })
+      })
+    })
+
+    return Array.from(indicators.values())
   }
   //----------------------------------------------------------------------------------------------------
 }
