@@ -19,7 +19,7 @@ export class EsgGoalService {
         userId: dto.userId,
         indicatorKey: goal.indicatorKey,
         category: dto.category,
-        year: goal.year, // ✅ 연도 기준으로 upsert
+        year: goal.year,
       })
 
       if (exists) {
@@ -28,6 +28,7 @@ export class EsgGoalService {
           {
             $set: {
               targetValue: goal.targetValue,
+              currentValue: goal.currentValue, // ✅ 현재 사용량 업데이트
               unit: goal.unit,
             },
           },

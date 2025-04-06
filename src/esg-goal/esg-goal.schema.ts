@@ -15,6 +15,9 @@ export class EsgGoal extends Document {
   @Prop({ required: true })
   targetValue: number
 
+  @Prop({ required: true }) // ✅ 현재 사용량도 필수로 받자
+  currentValue: number
+
   @Prop()
   unit: string
 

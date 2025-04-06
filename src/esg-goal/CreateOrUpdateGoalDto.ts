@@ -9,13 +9,15 @@ export class GoalItemDto {
   @IsNumber()
   targetValue: number
 
+  @IsNumber()
+  currentValue: number // ✅ 현재까지의 진행량 추가
+
   @IsString()
   unit: string
 
-  @IsNumber() // ➕ 연도 추가
+  @IsNumber()
   year: number
 }
-
 export class CreateEsgGoalDto {
   @IsString()
   @IsNotEmpty()
