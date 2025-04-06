@@ -12,13 +12,14 @@ export class EsgGoalService {
   ) {}
 
   async createGoal(dto: CreateEsgGoalDto & { userId: string }) {
-    const results: { indicatorKey: string; status: string }[] = []
+    const results: { indicatorKey: string; year: number; status: string }[] = []
 
     for (const goal of dto.goals) {
       const exists = await this.esgGoalModel.findOne({
         userId: dto.userId,
         indicatorKey: goal.indicatorKey,
         category: dto.category,
+        year: goal.year, // ✅ 연도 기준으로 upsert
       })
 
       if (exists) {
@@ -31,7 +32,7 @@ export class EsgGoalService {
             },
           },
         )
-        results.push({ indicatorKey: goal.indicatorKey, status: 'updated' })
+        results.push({ indicatorKey: goal.indicatorKey, year: goal.year, status: 'updated' })
       } else {
         const created = new this.esgGoalModel({
           ...goal,
@@ -39,7 +40,7 @@ export class EsgGoalService {
           userId: dto.userId,
         })
         await created.save()
-        results.push({ indicatorKey: goal.indicatorKey, status: 'created' })
+        results.push({ indicatorKey: goal.indicatorKey, year: goal.year, status: 'created' })
       }
     }
 
@@ -48,15 +49,14 @@ export class EsgGoalService {
       results,
     }
   }
-  //----------------------------------------------------------------------------------------------------
 
-  async getGoalsByCategory(userId: string, category: string) {
-    return this.esgGoalModel.find({ userId, category })
+  // ✅ 카테고리 + 연도 기준으로 목표 조회
+  async getGoalsByCategory(userId: string, category: string, year: number) {
+    return this.esgGoalModel.find({ userId, category, year })
   }
-  //----------------------------------------------------------------------------------------------------
 
-  async deleteGoal(userId: string, indicatorKey: string, category: string) {
-    return this.esgGoalModel.deleteOne({ userId, indicatorKey, category })
+  // ✅ 연도까지 포함해서 단일 목표 삭제
+  async deleteGoal(userId: string, indicatorKey: string, category: string, year: number) {
+    return this.esgGoalModel.deleteOne({ userId, indicatorKey, category, year })
   }
-  //----------------------------------------------------------------------------------------------------
 }

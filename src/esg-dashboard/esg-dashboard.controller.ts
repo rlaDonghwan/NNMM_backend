@@ -108,24 +108,27 @@ export class EsgDashboardController {
   //------------------------------------------------------------------------------------------------------
 
   // 카테고리별 대시보드에서 지표만 불러오기
-  @Get('indicators/:category')
-  getIndicators(@Req() req: Request, @Param('category') category: string) {
+  // 전년도 기준 지표만 불러오는 API
+  @Get('indicators/:category/previous-year')
+  getIndicatorsWithPreviousYearData(
+    @Req() req: Request,
+    @Param('category') category: string,
+    @Query('year') year: string, // 현재 연도
+  ) {
     const user = req.user as { _id: string }
-    return this.esgDashboardService.getIndicatorsFromDashboard(user._id, category)
-  }
-  //----------------------------------------------------------------------------------------------------
 
-  // @Get('indicators/:category/previous-year')
-  // getIndicatorsWithPrevYearData(
-  //   @Req() req: Request,
-  //   @Param('category') category: string,
-  //   @Query('year') year: string,
-  // ) {
-  //   const user = req.user as { _id: string }
-  //   return this.esgDashboardService.getIndicatorsWithPreviousYearData(
-  //     user._id,
-  //     category,
-  //     Number(year),
-  //   )
-  // }
+    // ⚠️ year 쿼리 파라미터가 없거나 숫자가 아닐 경우 처리
+    const parsedYear = Number(year)
+    if (!year || isNaN(parsedYear)) {
+      throw new Error('올바른 연도를 쿼리 파라미터로 제공해야 합니다. (?year=2025)')
+    }
+
+    return this.esgDashboardService.getIndicatorsWithPreviousYearData(
+      user._id,
+      category,
+      parsedYear,
+    )
+  }
+
+  //----------------------------------------------------------------------------------------------------
 }
