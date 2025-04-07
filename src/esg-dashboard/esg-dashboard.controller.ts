@@ -130,4 +130,9 @@ export class EsgDashboardController {
     )
   }
   //----------------------------------------------------------------------------------------------------
+  @Get('count-by-category')
+  async getChartCountByCategory(@Req() req) {
+    const userId = req.user._id
+    return this.esgDashboardService.getChartCountByCategory(userId)
+  }
 }

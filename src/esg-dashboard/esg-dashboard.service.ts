@@ -221,4 +221,29 @@ export class EsgDashboardService {
     return Array.from(indicators.values())
   }
   //----------------------------------------------------------------------------------------------------
+  async getChartCountByCategory(userId: string) {
+    const dashboards = await this.esgDashboardModel.find({ userId })
+
+    const countByCategory = {
+      environmental: 0,
+      social: 0,
+      governance: 0,
+    }
+
+    dashboards.forEach((dashboard) => {
+      const category = dashboard.category // environmental | social | governance
+
+      const chartCount = dashboard.charts?.length || 0
+
+      if (category === 'environmental') {
+        countByCategory.environmental += chartCount
+      } else if (category === 'social') {
+        countByCategory.social += chartCount
+      } else if (category === 'governance') {
+        countByCategory.governance += chartCount
+      }
+    })
+
+    return countByCategory
+  }
 }

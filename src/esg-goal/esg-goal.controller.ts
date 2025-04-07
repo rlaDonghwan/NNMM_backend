@@ -6,6 +6,7 @@ import { EsgGoalService } from './esg-goal.service'
 @UseGuards(JwtAuthGuard)
 @Controller('esg-goal')
 export class EsgGoalController {
+  esgDashboardService: any
   constructor(private readonly esgGoalService: EsgGoalService) {}
 
   @Post()
