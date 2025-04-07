@@ -11,7 +11,7 @@ import { UpdateChartOrderBatchDto } from './update-chart-order.dto'
 @UseGuards(JwtAuthGuard) // 모든 라우트에 JWT 인증 가드 적용 (로그인한 사용자만 접근 가능)
 export class EsgDashboardController {
   constructor(private readonly esgDashboardService: EsgDashboardService) {} // 서비스 의존성 주입
-  //----------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------
 
   // POST 요청 처리 (대시보드 생성)
   @Post()
