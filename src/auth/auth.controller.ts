@@ -15,6 +15,7 @@ export class AuthController {
   // 'POST /auth/signup' 경로로 들어오는 요청을 처리
   @Post('signup')
   async signup(@Body() dto: SignupDto) {
+    console.log('signup dto', dto) // 요청의 body 데이터를 SignupDto로 매핑
     // 요청의 body 데이터를 SignupDto로 매핑
     return this.authService.signup(dto) // AuthService의 signup 메서드 호출 후 결과 반환
   }
