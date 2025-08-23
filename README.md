@@ -1,21 +1,19 @@
-# NNMM - ESG 분석 및 통합 대시보드
-
-Next.js, Nest.js, MongoDB, Mongoose를 기반으로 한 ESG 데이터 시각화 및 관리 플랫폼입니다.
+# ESG 데이터 시각화 및 통합 대시보드 서비스
 
 ---
 
-## 📘 프로젝트 개요
+## 프로젝트 개요
 
 - **프로젝트 명**: NNMM (Next.js + Nest.js + MongoDB + Mongoose)
 - **개발 기간**: 2025.03.24 ~ 2025.04.07
 - **팀원 및 역할**:
-  - 김동환: Backend, Frontend, Design
+  - 김동환: 총괄
   - 김지현: Backend, Frontend, Design
   - 정상진: Backend, Frontend, Design
 
 ---
 
-## ✨ 프로젝트 요약문
+## 프로젝트 요약문
 
 NNMM은 ESG(Environmental, Social, Governance) 데이터를 통합적으로 수집·관리하고, 이를 시각화하여 한눈에 파악할 수 있도록 지원하는 ESG 분석 대시보드 플랫폼입니다.  
 Next.js, NestJS, MongoDB, Mongoose 기반으로 구현된 본 시스템은 사용자 맞춤형 차트 설정, 목표 지표 관리, 자동 시각화 추천 기능 등을 통해 기업의 ESG 경영 활동을 디지털화하고 데이터 기반의 의사결정을 지원합니다.  
@@ -23,7 +21,7 @@ Next.js, NestJS, MongoDB, Mongoose 기반으로 구현된 본 시스템은 사�
 
 ---
 
-## 🎯 프로젝트 목적
+## 프로젝트 목적
 
 - ESG 데이터의 디지털화 및 시각화
 - 유연하고 확장 가능한 ESG 관리 시스템 구축
@@ -32,25 +30,31 @@ Next.js, NestJS, MongoDB, Mongoose 기반으로 구현된 본 시스템은 사�
 
 ---
 
-## 🌟 기대 효과
+## 주요 기능
 
-- ESG 경영 활성화 지원
-- 데이터 기반 의사결정 강화
-- 사용자 맞춤형 대시보드 경험 제공
-- 장기적으로 기업의 지속가능성 제고
-
----
-
-## 🛠 사용 기술 스택
-
-- **Frontend**: Next.js, TypeScript, TailwindCSS
-- **Backend**: NestJS, TypeScript
-- **Database**: MongoDB, Mongoose
-- **시각화**: Chart.js, Recharts 등
+| 기능 구분       | 설명                                     |
+| --------------- | ---------------------------------------- |
+| ESG 데이터 입력 | 환경, 사회, 지배구조 영역별 입력 폼      |
+| 대시보드        | Chart.js, Recharts 기반 맞춤형 차트 생성 |
+| 목표 설정       | 카테고리별 KPI 설정 및 진행률 추적       |
+| 변경 이력       | 데이터 변경사항 로그 기록                |
+| 자동 추천       | 입력된 데이터 기반 차트 형태 추천        |
 
 ---
 
-## 🔧 주요 기능
+## 기술 스택
+
+| 영역         | 기술                             |
+| ------------ | -------------------------------- |
+| **Frontend** | Next.js, TypeScript, TailwindCSS |
+| **Backend**  | NestJS, TypeScript               |
+| **Database** | MongoDB, Mongoose                |
+| **시각화**   | Chart.js, Recharts               |
+| **인증**     | JWT 기반 인증 시스템             |
+
+---
+
+## 주요 기능
 
 - ESG 데이터(환경, 사회, 지배구조) 입력 및 관리
 - 통합 대시보드에서 차트 생성 및 커스터마이징
@@ -60,7 +64,7 @@ Next.js, NestJS, MongoDB, Mongoose 기반으로 구현된 본 시스템은 사�
 
 ---
 
-## 🔄 백엔드 아키텍처 및 시스템 다이어그램
+## 백엔드 아키텍처 및 시스템 다이어그램
 
 ### 1. NestJS 모듈 아키텍처
 
